@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DailyDotaGod.Models;
 using Newtonsoft.Json;
+using DailyDotaGod.Models.DailyDotaProxy;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -26,11 +27,16 @@ namespace DailyDotaGod.Views
     {
         public HomePage()
         {
-            const string rawJson = @"{ team_name : 'Natus Vincere', team_tag: 'NaVi' }";
-            OneManArmy = JsonConvert.DeserializeObject<Team>(rawJson).ToString();
+            
             this.InitializeComponent();
         }
 
         public string OneManArmy { get; set; }
+
+        private async void LoadingPage(FrameworkElement sender, object args)
+        {
+            MatchesInfo matches = await DailyDotaClient.Instance.RequestMatchesInfo();
+            Woody.Text = $"{matches.Matches[0].Team1.Tag} vs {matches.Matches[0].Team2.Tag} at {matches.Matches[0].StartTime.ToString("hh:mm:ss")}";
+        }
     }
 }

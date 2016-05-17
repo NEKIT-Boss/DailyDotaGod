@@ -74,7 +74,7 @@
 			OpenPaneLength="{StaticResource OpenedPaneWidth}" CompactPaneLength="{StaticResource ClosedPaneWidth}"
 			HorizontalAlignment="Stretch" PaneBackground="#FF2B2B2B">
             <SplitView.Pane>
-                <ListBox x:Name="MenuListBox" Background="Transparent">
+                <ListBox x:Name="MenuListBox" Background="Transparent" SelectionChanged="MenuListBox_SelectionChanged">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Padding" Value="0"/>

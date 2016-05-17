@@ -37,7 +37,7 @@ namespace DailyDotaGod.Views
             MenuSplitView.IsPaneOpen = !MenuSplitView.IsPaneOpen;
         }
 
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void MenuListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBox menu = sender as ListBox;
 
