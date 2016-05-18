@@ -8,7 +8,6 @@
     <Application.Resources>
         <ResourceDictionary>
             <Color x:Key="SystemAccentColor">Orange</Color>
-            <Color x:Key="SystemDefaultColor">Red</Color>
         </ResourceDictionary>
     </Application.Resources>
 

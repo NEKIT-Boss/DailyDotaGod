@@ -12,12 +12,8 @@ namespace DailyDotaGod.Models.DailyDotaProxy
 {
     public sealed class DailyDotaClient
     {
-        private HttpClient Client { get; set; }
-        
-
         private static readonly Uri RequestAddress =
-             new Uri(@"http://dailydota2.com/match-api");
-        
+             new Uri(@"http://dailydota2.com/match-api");   
 
         private static readonly DailyDotaClient _instance = new DailyDotaClient();
         public static DailyDotaClient Instance
@@ -38,15 +34,25 @@ namespace DailyDotaGod.Models.DailyDotaProxy
 
         private DailyDotaClient()
         {
-            Client = new HttpClient();
         }
 
         public async Task<MatchesInfo> RequestMatchesInfo()
         {
             return await Task.Run(() =>
             {
-                string rawJson = Client.GetStringAsync(RequestAddress).Result.ToString();
-                return JsonConvert.DeserializeObject<MatchesInfo>(rawJson);
+                if (CheckConnectivity())
+                {
+                    using (var client = new HttpClient())
+                    {
+                        string rawJson = client.GetStringAsync(RequestAddress).Result.ToString();
+                        return JsonConvert.DeserializeObject<MatchesInfo>(rawJson);
+                    }
+                }
+                else
+                {
+                    // Here we must have ecxception of some kind!
+                    return null;
+                }
             });
         }
     }

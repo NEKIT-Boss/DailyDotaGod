@@ -13,12 +13,6 @@ namespace DailyDotaGod.Models.DailyDotaProxy
         public const string League = "league";
     }
 
-    public enum LiveStatus
-    {
-        Upcoming = 0, 
-        Live = 1
-    }
-
     public class Match
     {
         [JsonProperty(MatchMapping.StartTime)]

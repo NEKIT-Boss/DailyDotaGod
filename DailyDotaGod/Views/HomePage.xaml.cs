@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Navigation;
 using DailyDotaGod.Models;
 using Newtonsoft.Json;
 using DailyDotaGod.Models.DailyDotaProxy;
+using DailyDotaGod.Data;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -36,7 +37,10 @@ namespace DailyDotaGod.Views
         private async void LoadingPage(FrameworkElement sender, object args)
         {
             MatchesInfo matches = await DailyDotaClient.Instance.RequestMatchesInfo();
-            Woody.Text = $"{matches.Matches[0].Team1.Tag} vs {matches.Matches[0].Team2.Tag} at {matches.Matches[0].StartTime.ToString("hh:mm:ss")}";
+            using (var context = new StorageContext())
+            {
+                Woody.Text = context.Teams.First().Name;
+            }
         }
     }
 }

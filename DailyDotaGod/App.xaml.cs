@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DailyDotaGod.Views;
+using DailyDotaGod.Data;
+using Microsoft.Data.Entity;
 
 namespace DailyDotaGod
 {
@@ -31,6 +33,11 @@ namespace DailyDotaGod
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            using (var storageContext = new StorageContext())
+            {
+                storageContext.Database.Migrate();
+            }
         }
 
         /// <summary>

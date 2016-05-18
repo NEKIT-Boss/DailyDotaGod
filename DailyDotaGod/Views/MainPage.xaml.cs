@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using DailyDotaGod.ViewModels;
+using DailyDotaGod.Data;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -29,7 +30,20 @@ namespace DailyDotaGod.Views
         {
             this.InitializeComponent();
             AppShell = new Shell(null, MainMenuFrame);
-            MenuListBox.SelectedIndex = 0;
+
+            //using (var context = new StorageContext())
+            //{
+            //    context.Teams.Add(new Team
+            //    {
+            //        Logo = null,
+            //        Name = "Natus Vincere",
+            //        Tag = "NaVi"
+            //    });
+
+            //    context.SaveChanges();
+            //}
+
+                MenuListBox.SelectedIndex = 0;
         }
 
         private void HamburgerButton_Click(object sender, RoutedEventArgs e)
