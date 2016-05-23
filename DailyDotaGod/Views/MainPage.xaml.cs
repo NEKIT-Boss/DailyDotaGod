@@ -25,25 +25,17 @@ namespace DailyDotaGod.Views
     public sealed partial class MainPage : Page
     {
         Shell AppShell { get; set; }
+        DailyDotaLoader Loader { get; set; }
 
         public MainPage()
         {
             this.InitializeComponent();
             AppShell = new Shell(null, MainMenuFrame);
 
-            //using (var context = new StorageContext())
-            //{
-            //    context.Teams.Add(new Team
-            //    {
-            //        Logo = null,
-            //        Name = "Natus Vincere",
-            //        Tag = "NaVi"
-            //    });
-
-            //    context.SaveChanges();
-            //}
-
-                MenuListBox.SelectedIndex = 0;
+            //Need to configure this with config files
+            Loader = new DailyDotaLoader(TimeSpan.FromSeconds(40));
+            Loader.StartRequesting();
+            MenuListBox.SelectedIndex = 0;
         }
 
         private void HamburgerButton_Click(object sender, RoutedEventArgs e)

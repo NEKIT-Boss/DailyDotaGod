@@ -16,19 +16,6 @@ namespace DailyDotaGod.Models.DailyDotaProxy
         public string Name { get; set; }
 
         [JsonProperty(LeagueMapping.LogoUrl)]
-        private string LogoUrl { get; set; }
-
-        [JsonIgnore]
-        public BitmapImage LogoImage
-        {
-            get
-            {
-                return new BitmapImage(
-                    new Uri(
-                        LogoUrl,
-                        UriKind.Absolute)
-                    );
-            }
-        }
+        public Uri LogoUrl { get; set; }
     }
 }

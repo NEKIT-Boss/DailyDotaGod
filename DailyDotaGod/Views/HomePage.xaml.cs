@@ -34,13 +34,9 @@ namespace DailyDotaGod.Views
 
         public string OneManArmy { get; set; }
 
-        private async void LoadingPage(FrameworkElement sender, object args)
+        private void LoadingPage(FrameworkElement sender, object args)
         {
-            MatchesInfo matches = await DailyDotaClient.Instance.RequestMatchesInfo();
-            using (var context = new StorageContext())
-            {
-                Woody.Text = context.Teams.First().Name;
-            }
+            
         }
     }
 }

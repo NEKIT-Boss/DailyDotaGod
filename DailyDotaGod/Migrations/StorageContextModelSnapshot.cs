@@ -15,10 +15,22 @@ namespace DailyDotaGod.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.0-rc1-16348");
 
+            modelBuilder.Entity("DailyDotaGod.Data.CountryImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<byte[]>("Data");
+
+                    b.HasKey("Id");
+                });
+
             modelBuilder.Entity("DailyDotaGod.Data.League", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("LogoId");
 
                     b.Property<string>("Name");
 
@@ -27,7 +39,8 @@ namespace DailyDotaGod.Migrations
 
             modelBuilder.Entity("DailyDotaGod.Data.LeagueImage", b =>
                 {
-                    b.Property<int>("Id");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<byte[]>("Data");
 
@@ -59,6 +72,10 @@ namespace DailyDotaGod.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("CountryLogoId");
+
+                    b.Property<int?>("LogoId");
+
                     b.Property<string>("Name");
 
                     b.Property<string>("Tag");
@@ -68,18 +85,19 @@ namespace DailyDotaGod.Migrations
 
             modelBuilder.Entity("DailyDotaGod.Data.TeamImage", b =>
                 {
-                    b.Property<int>("Id");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<byte[]>("Data");
 
                     b.HasKey("Id");
                 });
 
-            modelBuilder.Entity("DailyDotaGod.Data.LeagueImage", b =>
+            modelBuilder.Entity("DailyDotaGod.Data.League", b =>
                 {
-                    b.HasOne("DailyDotaGod.Data.League")
-                        .WithOne()
-                        .HasForeignKey("DailyDotaGod.Data.LeagueImage", "Id");
+                    b.HasOne("DailyDotaGod.Data.LeagueImage")
+                        .WithMany()
+                        .HasForeignKey("LogoId");
                 });
 
             modelBuilder.Entity("DailyDotaGod.Data.Match", b =>
@@ -97,11 +115,15 @@ namespace DailyDotaGod.Migrations
                         .HasForeignKey("Team2Id");
                 });
 
-            modelBuilder.Entity("DailyDotaGod.Data.TeamImage", b =>
+            modelBuilder.Entity("DailyDotaGod.Data.Team", b =>
                 {
-                    b.HasOne("DailyDotaGod.Data.Team")
-                        .WithOne()
-                        .HasForeignKey("DailyDotaGod.Data.TeamImage", "Id");
+                    b.HasOne("DailyDotaGod.Data.CountryImage")
+                        .WithMany()
+                        .HasForeignKey("CountryLogoId");
+
+                    b.HasOne("DailyDotaGod.Data.TeamImage")
+                        .WithMany()
+                        .HasForeignKey("LogoId");
                 });
         }
     }

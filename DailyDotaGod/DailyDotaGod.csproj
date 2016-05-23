@@ -95,15 +95,16 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Data\CountryImage.cs" />
     <Compile Include="Data\LeagueImage.cs" />
     <Compile Include="Data\League.cs" />
     <Compile Include="Data\Match.cs" />
     <Compile Include="Data\StorageContext.cs" />
     <Compile Include="Data\Team.cs" />
     <Compile Include="Data\TeamImage.cs" />
-    <Compile Include="Migrations\20160518105738_InitialMigration.cs" />
-    <Compile Include="Migrations\20160518105738_InitialMigration.designer.cs">
-      <DependentUpon>20160518105738_InitialMigration.cs</DependentUpon>
+    <Compile Include="Migrations\20160523212332_Initial.cs" />
+    <Compile Include="Migrations\20160523212332_Initial.designer.cs">
+      <DependentUpon>20160523212332_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\StorageContextModelSnapshot.cs" />
     <Compile Include="Models\DailyDotaProxy\DailyDotaClient.cs" />
@@ -112,13 +113,17 @@
     <Compile Include="Models\DailyDotaProxy\MatchesInfo.cs" />
     <Compile Include="Models\DailyDotaProxy\Team.cs" />
     <Compile Include="Models\DailyDotaProxy\UnixTimeConverter.cs" />
+    <Compile Include="Models\DailyDotaProxy\UriToRawExtension.cs" />
     <Compile Include="Models\LiveStatusEnum.cs" />
+    <Compile Include="Models\StorageManager.cs" />
     <Compile Include="ViewModels\DailyDotaLoader.cs" />
     <Compile Include="ViewModels\Helpers.cs" />
     <Compile Include="ViewModels\Shell.cs" />
     <Compile Include="Views\AllMatchesPage.xaml.cs">
       <DependentUpon>AllMatchesPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\BoolToVisibilityConverter.cs" />
+    <Compile Include="Views\ConnectionToIconConverter.cs" />
     <Compile Include="Views\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>

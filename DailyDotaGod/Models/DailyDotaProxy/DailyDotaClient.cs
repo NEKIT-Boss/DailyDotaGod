@@ -25,22 +25,25 @@ namespace DailyDotaGod.Models.DailyDotaProxy
         } 
 
 
-        public bool CheckConnectivity()
+        public bool IsConnnected
         {
-            ConnectionProfile connection = NetworkInformation.GetInternetConnectionProfile();
-            bool connected = (connection != null) && connection.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.InternetAccess;
-            return connected;    
+            get
+            {
+                ConnectionProfile connection = NetworkInformation.GetInternetConnectionProfile();
+                bool connected = (connection != null) && connection.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.InternetAccess;
+                return connected;    
+            }
         }
 
         private DailyDotaClient()
         {
         }
 
-        public async Task<MatchesInfo> RequestMatchesInfo()
+        public async Task<MatchesInfo> RequestMatchesInfoAsync()
         {
             return await Task.Run(() =>
             {
-                if (CheckConnectivity())
+                if (IsConnnected)
                 {
                     using (var client = new HttpClient())
                     {

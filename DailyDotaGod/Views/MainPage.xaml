@@ -9,7 +9,15 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <ResourceDictionary Source="Styles/MainPageStyle.xaml"/>
+        <ResourceDictionary>
+            <local:ConnectionToIconConverter x:Key="ConnectionToIconConverter"/>
+            <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <x:Double x:Key="wow">12</x:Double>
+            
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/MainPageStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -39,34 +47,11 @@
             <TextBlock Grid.Column="1" Margin="20 0 0 0" Text="{x:Bind AppShell.MainMenuTitle, Mode=OneWay}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Center"/>
 
             <Grid Grid.Column="2" HorizontalAlignment="Right"  Margin="0 0 20 0">
-                <Button IsEnabled="{x:Bind AppShell.IsNetworkChecked, Mode=OneWay}" VerticalAlignment="Center">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Grid>
-                                <TextBlock x:Name="NetworkStatusIcon" FontFamily="Segoe MDL2 Assets" FontSize="{StaticResource IconSize}" Text="&#xEB5E;" VerticalAlignment="Bottom"/>
-                                <ProgressRing x:Name="NetworkCheckProgress" Width="{StaticResource IconSize}" Height="{StaticResource IconSize}" IsActive="True" VerticalAlignment="Bottom"/>
-
-                                <VisualStateManager.VisualStateGroups >
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal">
-                                            <VisualState.Setters>
-                                                <Setter Target="NetworkStatusIcon.Visibility" Value="Visible"/>
-                                                <Setter Target="NetworkCheckProgress.Visibility" Value="Collapsed"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-
-                                        <VisualState x:Name="Disabled">
-                                            <VisualState.Setters>
-                                                <Setter Target="NetworkStatusIcon.Visibility" Value="Collapsed"/>
-                                                <Setter Target="NetworkCheckProgress.Visibility" Value="Visible"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                </VisualStateManager.VisualStateGroups>
-                            </Grid>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                <ProgressRing Width="{StaticResource IconSize}" Height="{StaticResource IconSize}"
+                           IsActive="True" Visibility="{x:Bind Loader.ConnectionChecking, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"/>
+                <TextBlock FontSize="{StaticResource IconSize}" FontFamily="Segoe MDL2 Assets" TextAlignment="Right" VerticalAlignment="Center"
+                           Text="{x:Bind Loader.IsConnected, Converter={StaticResource ConnectionToIconConverter}, Mode=OneWay}"
+                           Visibility="{x:Bind Loader.ConnectionChecking, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Maniac, Mode=OneWay}"/>
             </Grid>
         </Grid>
 
