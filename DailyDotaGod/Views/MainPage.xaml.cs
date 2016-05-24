@@ -33,7 +33,7 @@ namespace DailyDotaGod.Views
             AppShell = new Shell(null, MainMenuFrame);
 
             //Need to configure this with config files
-            Loader = new DailyDotaLoader(TimeSpan.FromSeconds(40));
+            Loader = new DailyDotaLoader(TimeSpan.FromSeconds(15));
             Loader.StartRequesting();
             MenuListBox.SelectedIndex = 0;
         }

@@ -99,12 +99,13 @@
     <Compile Include="Data\LeagueImage.cs" />
     <Compile Include="Data\League.cs" />
     <Compile Include="Data\Match.cs" />
+    <Compile Include="Data\RawImage.cs" />
     <Compile Include="Data\StorageContext.cs" />
     <Compile Include="Data\Team.cs" />
     <Compile Include="Data\TeamImage.cs" />
-    <Compile Include="Migrations\20160523212332_Initial.cs" />
-    <Compile Include="Migrations\20160523212332_Initial.designer.cs">
-      <DependentUpon>20160523212332_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\20160524112356_Initial.cs" />
+    <Compile Include="Migrations\20160524112356_Initial.designer.cs">
+      <DependentUpon>20160524112356_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\StorageContextModelSnapshot.cs" />
     <Compile Include="Models\DailyDotaProxy\DailyDotaClient.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="ViewModels\DailyDotaLoader.cs" />
     <Compile Include="ViewModels\Helpers.cs" />
     <Compile Include="ViewModels\Shell.cs" />
+    <Compile Include="ViewModels\TeamViewModel.cs" />
     <Compile Include="Views\AllMatchesPage.xaml.cs">
       <DependentUpon>AllMatchesPage.xaml</DependentUpon>
     </Compile>

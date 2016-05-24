@@ -14,6 +14,7 @@ namespace DailyDotaGod.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Code = table.Column<string>(nullable: true),
                     Data = table.Column<byte[]>(nullable: true)
                 },
                 constraints: table =>

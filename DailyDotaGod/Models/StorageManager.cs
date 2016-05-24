@@ -10,11 +10,16 @@ using DailyDotaGod.Data;
 using DailyDotaGod.Models.DailyDotaProxy;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using System.Collections.ObjectModel;
+using Microsoft.Data.Entity;
+using DailyDotaGod.ViewModels;
 
 namespace DailyDotaGod.Models
 {
     class StorageManager
     {
+
+        #region Singletone
         private static readonly StorageManager _instance = new StorageManager();
         public static StorageManager Instance
         {
@@ -28,6 +33,35 @@ namespace DailyDotaGod.Models
         {
             
         }
+        #endregion
+
+        public ObservableCollection<TeamViewModel> Teams { get; set; } = new ObservableCollection<TeamViewModel>();
+
+        public async Task<bool> SyncWithStorage()
+        {
+            using (var context = new StorageContext())
+            {
+                try
+                {
+                    if (Teams.Count == 0)
+                    {
+                        var teams = await context.Teams.ToListAsync();
+                        foreach (var team in teams)
+                        {
+                            Teams.Add(new TeamViewModel(team));
+                        }
+                    }
+
+                    return true;
+                }
+
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                    return false;
+                }
+            }
+        }
 
         /// <summary>
         /// For now, we will try without interface
@@ -40,19 +74,31 @@ namespace DailyDotaGod.Models
         {
             using (var context = new StorageContext())
             {
-                var stored_team = context.Teams.FirstOrDefault((team) =>
+                var storedTeam = context.Teams.FirstOrDefault((team) =>
                     (loadedTeam.Name == team.Name && loadedTeam.Tag == team.Tag)
                 );
 
-                return stored_team != default(Data.Team);
+                return storedTeam != default(Data.Team);
             }
         }
 
-        private async Task<TeamImage> LoadTeamImage(DailyDotaProxy.Team team)
+        private bool CountryImageExists(string countryCode)
+        {
+            using (var context = new StorageContext())
+            {
+                var storedLogo = context.CountryImages.FirstOrDefault((countryImage) => 
+                    countryImage.Code ==  countryCode 
+                );
+
+                return storedLogo != default(CountryImage);
+            }
+        }
+
+        private async Task<TeamImage> LoadTeamImageAsync(Uri logoUri)
         {
             return await Task.Run(async () =>
             {
-                byte[] rawData = await team.LogoUrl.DownloadRaw();
+                byte[] rawData = await logoUri.DownloadRaw();
 
                 return new TeamImage
                 {
@@ -61,9 +107,19 @@ namespace DailyDotaGod.Models
             });
         }
 
-        //Load Those CountryImages, actually outside teams maybe
-        //During adding the teams, it is known that obly new teams, so could do some
-        // Iteration find new coutry images
+        private async Task<CountryImage> LoadCountryImageAsync(Uri logoUri, string countryCode)
+        {
+            return await Task.Run(async () =>
+            {
+                byte[] rawData = await logoUri.DownloadRaw();
+
+                return new CountryImage
+                {
+                    Data = rawData,
+                    Code = countryCode
+                };
+            });
+        }
 
         /// <summary>
         /// Adds the team acquired from DailyDota API 
@@ -76,31 +132,46 @@ namespace DailyDotaGod.Models
             {
                 using (var context = new StorageContext())
                 {
-                    Task<TeamImage>[] logoTasks = new Task<TeamImage>[loadedTeams.Count];
-                    for (int i = 0; i < loadedTeams.Count; i++)
+                    
+                    List<Task<TeamImage>> teamImagesTasks = new List<Task<TeamImage>>();
+                    List<Task<CountryImage>> countryImagesTasks = new List<Task<CountryImage>>();
+                    foreach (var loadedTeam in loadedTeams)
                     {
-                        logoTasks[i] = LoadTeamImage(loadedTeams[i]);
+                        teamImagesTasks.Add( LoadTeamImageAsync(loadedTeam.LogoUrl) );
+                        if ( (loadedTeam.CountryCode != "") && (!CountryImageExists(loadedTeam.CountryCode)) )
+                        {
+                            countryImagesTasks.Add( LoadCountryImageAsync(loadedTeam.CountryLogoUrl, loadedTeam.CountryCode) );
+                        }
                     }
-                    await Task.WhenAll(logoTasks);
+                    await Task.WhenAll(countryImagesTasks);
+                    await Task.WhenAll(teamImagesTasks);
 
-                    TeamImage[] logos = logoTasks.Select(logoTask => logoTask.Result).ToArray();
-                    context.TeamImages.AddRange(logos);
+                    TeamImage[] teamImages = teamImagesTasks.Select(teamImageTask => teamImageTask.Result).ToArray();
+                    context.TeamImages.AddRange(teamImages);
+                    await context.SaveChangesAsync();
+
+                    CountryImage[] countryImages = countryImagesTasks.Select(countryImagesTask => countryImagesTask.Result).ToArray();
+                    context.CountryImages.AddRange(countryImages);
                     await context.SaveChangesAsync();
 
                     List<Data.Team> teams = new List<Data.Team>();
-                    foreach (var teamLogoTuple in loadedTeams.Zip(logos, (team, logo) => Tuple.Create(team, logo)))
+                    for (int teamIndex = 0; teamIndex < loadedTeams.Count; teamIndex++)
                     {
                         teams.Add(new Data.Team()
                         {
-                            Name = teamLogoTuple.Item1.Name,
-                            Tag = teamLogoTuple.Item1.Tag,
-                            Logo = teamLogoTuple.Item2,
-                            CountryLogo = null
+                            Name = loadedTeams[teamIndex].Name,
+                            Tag = loadedTeams[teamIndex].Tag,
+                            Logo = teamImages[teamIndex],
+                            CountryLogo =
+                                context.CountryImages.FirstOrDefault( 
+                                    countryImage => countryImage.Code == loadedTeams[teamIndex].CountryCode
+                                )
                         });
                     }
                     context.Teams.AddRange(teams);
 
                     await context.SaveChangesAsync();
+                    await SyncWithStorage();
                     Debug.WriteLine($"Finished!");
                     return true;
                 }

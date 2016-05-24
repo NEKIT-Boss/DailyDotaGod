@@ -20,6 +20,8 @@ namespace DailyDotaGod.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Code");
+
                     b.Property<byte[]>("Data");
 
                     b.HasKey("Id");

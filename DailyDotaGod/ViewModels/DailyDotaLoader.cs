@@ -67,23 +67,38 @@ namespace DailyDotaGod.ViewModels
             //He will decide, whether to put or not the information into database again, and will tell all corresponding things
             //If they are to update
             ConnectionChecking = true;
-            IsConnected = Client.IsConnnected;
 
-            MatchesInfo matchesInfo = await Client.RequestMatchesInfoAsync();
-            var teams = matchesInfo.Matches.Select(match => match.Team1).Union(matchesInfo.Matches.Select(match => match.Team2)).ToList();
-
-            Debug.WriteLine(string.Join("|", teams.Select(team => team.Name)));
-
-            List<Team> newTeams = new List<Team>(); 
-            foreach (Team team in teams)
+            const int RECHECK_COUNT = 5;
+            for (int recheck = 0; recheck < RECHECK_COUNT; recheck++)
             {
-                if (!Storage.TeamExists(team))
+                await Task.Delay(TimeSpan.FromMilliseconds(800));
+                if (IsConnected = Client.IsConnnected)
                 {
-                    newTeams.Add(team);
+                    break;
                 }
             }
 
-            await Storage.StoreTeams(newTeams);
+            if (IsConnected)
+            {
+                MatchesInfo matchesInfo = await Client.RequestMatchesInfoAsync();
+                var teams = matchesInfo.Matches.Select(match => match.Team1).Union(matchesInfo.Matches.Select(match => match.Team2)).ToList();
+
+                List<Team> newTeams = new List<Team>(); 
+                foreach (Team team in teams)
+                {
+                    if (!Storage.TeamExists(team))
+                    {
+                        newTeams.Add(team);
+                    }
+                }
+
+                if (newTeams.Count > 0)
+                {
+                    await Storage.StoreTeams(newTeams);
+                }
+
+                ConnectionChecking = false;
+            }
             ConnectionChecking = false;
         }
 
@@ -110,11 +125,12 @@ namespace DailyDotaGod.ViewModels
             if (IsConnected)
             {
                 RequestData();
-                //RequestTimer.Start();
+                RequestTimer.Start();
             }
             else
             {
-                //RequestTimer.Start();
+                ConnectionChecking = false;
+                RequestTimer.Start();
             }
         }
 

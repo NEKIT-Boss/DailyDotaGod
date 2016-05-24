@@ -16,6 +16,10 @@ using DailyDotaGod.Models;
 using Newtonsoft.Json;
 using DailyDotaGod.Models.DailyDotaProxy;
 using DailyDotaGod.Data;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.Storage.Streams;
+using System.Collections.ObjectModel;
+using DailyDotaGod.ViewModels;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -28,15 +32,10 @@ namespace DailyDotaGod.Views
     {
         public HomePage()
         {
-            
+            Items = StorageManager.Instance.Teams;   
             this.InitializeComponent();
         }
 
-        public string OneManArmy { get; set; }
-
-        private void LoadingPage(FrameworkElement sender, object args)
-        {
-            
-        }
+        ObservableCollection<TeamViewModel> Items { get; set; }
     }
 }

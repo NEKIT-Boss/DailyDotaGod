@@ -16,6 +16,7 @@ namespace DailyDotaGod.Data
         // Need to think whether or not we need it, and we can, I think hide it.
         public DbSet<LeagueImage> LeagueImages { get; set; }
         public DbSet<TeamImage> TeamImages { get; set; }
+        public DbSet<CountryImage> CountryImages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

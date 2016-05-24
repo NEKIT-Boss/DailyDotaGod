@@ -40,15 +40,15 @@ namespace DailyDotaGod.Models.DailyDotaProxy
         }
 
         [JsonProperty(TeamMapping.CountryCode)]
-        private string CountryCode { get; set; }
+        public string CountryCode { get; set; }
 
         [JsonIgnore]
-        public Uri CountryLogo
+        public Uri CountryLogoUrl
         {
             get
             {
                 const string imageUriPattern = @"http://dailydota2.com/images/cc/{0}.png";
-                return new Uri(string.Format(imageUriPattern, CountryCode), UriKind.Absolute);
+                return new Uri( string.Format(imageUriPattern, CountryCode), UriKind.Absolute);
             }
         }
 

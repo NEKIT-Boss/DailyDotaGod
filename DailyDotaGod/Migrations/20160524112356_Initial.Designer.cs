@@ -8,7 +8,7 @@ using DailyDotaGod.Data;
 namespace DailyDotaGod.Migrations
 {
     [DbContext(typeof(StorageContext))]
-    [Migration("20160523212332_Initial")]
+    [Migration("20160524112356_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,8 @@ namespace DailyDotaGod.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code");
 
                     b.Property<byte[]>("Data");
 
