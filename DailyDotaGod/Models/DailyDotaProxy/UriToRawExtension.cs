@@ -6,18 +6,28 @@ using System.Threading.Tasks;
 using Windows.Web.Http;
 using System.IO;
 using Windows.Storage.Streams;
+using System.Diagnostics;
 
 namespace DailyDotaGod.Models.DailyDotaProxy
 {
     public static class UriToRawExtension
     {
-        public static async Task<byte[]> DownloadRaw(this Uri image_uri)
+        public static async Task<byte[]> DownloadRawAsync(this Uri image_uri)
         {
             using (var client = new HttpClient())
             {
                 using (var response = await client.GetAsync(image_uri))
                 {
-                    response.EnsureSuccessStatusCode();
+                    try
+                    {
+                        response.EnsureSuccessStatusCode();
+                    }
+
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message + " " +  image_uri.AbsoluteUri);
+                        return null;
+                    }
 
                     using (IInputStream inputStream = await response.Content.ReadAsInputStreamAsync())
                     {

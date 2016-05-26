@@ -31,7 +31,7 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
-        private bool _connectionChecking = true;
+        private bool _connectionChecking = false;
         public bool ConnectionChecking
         {
             get
@@ -60,14 +60,13 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
-        private async void RequestData(object sender = null, object e = null)
+        private async void RequestData(object sender, object e)
         {
-            //Here we must request from the client, then,
-            //feed that information to the KnowledgeManager
-            //He will decide, whether to put or not the information into database again, and will tell all corresponding things
-            //If they are to update
+            (sender as DispatcherTimer).Stop();
+
             ConnectionChecking = true;
 
+            // Need to put that in config file
             const int RECHECK_COUNT = 5;
             for (int recheck = 0; recheck < RECHECK_COUNT; recheck++)
             {
@@ -80,13 +79,16 @@ namespace DailyDotaGod.ViewModels
 
             if (IsConnected)
             {
+                //Debug.WriteLine("Stepped into async load");
                 MatchesInfo matchesInfo = await Client.RequestMatchesInfoAsync();
+                //Debug.WriteLine("Stepped out async load");
+
                 var teams = matchesInfo.Matches.Select(match => match.Team1).Union(matchesInfo.Matches.Select(match => match.Team2)).ToList();
 
                 List<Team> newTeams = new List<Team>(); 
                 foreach (Team team in teams)
                 {
-                    if (!Storage.TeamExists(team))
+                    if (! await Storage.TeamExists(team) )
                     {
                         newTeams.Add(team);
                     }
@@ -96,9 +98,9 @@ namespace DailyDotaGod.ViewModels
                 {
                     await Storage.StoreTeams(newTeams);
                 }
-
-                ConnectionChecking = false;
             }
+
+            await Storage.SyncExposed();
             ConnectionChecking = false;
         }
 
@@ -124,7 +126,8 @@ namespace DailyDotaGod.ViewModels
 
             if (IsConnected)
             {
-                RequestData();
+                //Need to think about tricking timer, and consider real Task thing
+                //RequestData();
                 RequestTimer.Start();
             }
             else

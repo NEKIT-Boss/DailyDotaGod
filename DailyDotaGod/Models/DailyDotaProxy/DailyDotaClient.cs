@@ -41,22 +41,26 @@ namespace DailyDotaGod.Models.DailyDotaProxy
 
         public async Task<MatchesInfo> RequestMatchesInfoAsync()
         {
-            return await Task.Run(() =>
-            {
-                if (IsConnnected)
-                {
-                    using (var client = new HttpClient())
-                    {
-                        string rawJson = client.GetStringAsync(RequestAddress).Result.ToString();
-                        return JsonConvert.DeserializeObject<MatchesInfo>(rawJson);
-                    }
-                }
-                else
-                {
-                    // Here we must have ecxception of some kind!
-                    return null;
-                }
-            });
+            return await Task.Run(async () =>
+           {
+               if (IsConnnected)
+               {
+                   using (var client = new HttpClient())
+                   {
+                       string rawJson = await client.GetStringAsync(RequestAddress).ConfigureAwait(false);
+                       return await Task.Factory.StartNew(() =>
+                       {
+                           return JsonConvert.DeserializeObject<MatchesInfo>(rawJson);
+                       }).ConfigureAwait(false);
+                   }
+               }
+
+               else
+               {
+                   //Need to have some exception of some kind here
+                   return null;
+               }
+           }).ConfigureAwait(false);
         }
     }
 }

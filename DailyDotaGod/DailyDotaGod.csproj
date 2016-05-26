@@ -118,6 +118,7 @@
     <Compile Include="Models\LiveStatusEnum.cs" />
     <Compile Include="Models\StorageManager.cs" />
     <Compile Include="ViewModels\DailyDotaLoader.cs" />
+    <Compile Include="ViewModels\FavoritesViewModel.cs" />
     <Compile Include="ViewModels\Helpers.cs" />
     <Compile Include="ViewModels\Shell.cs" />
     <Compile Include="ViewModels\TeamViewModel.cs" />

@@ -35,20 +35,6 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
-        private bool _isNetworkChecked = false;
-        public bool IsNetworkChecked
-        {
-            get
-            {
-                return _isNetworkChecked;
-            }
-
-            set
-            {
-                SetProperty(ref _isNetworkChecked, value);
-            }
-        }
-
         public Shell(Frame mainFrame, Frame mainMenuFrame)
         {
             MainFrame = mainFrame;
@@ -61,18 +47,6 @@ namespace DailyDotaGod.ViewModels
             };
 
             NavigateMenu("Сводка");
-            NetworkCheckTimer.Tick += CheckNetwork;
-            NetworkCheckTimer.Interval = TimeSpan.FromSeconds(10);
-
-            CheckNetwork(null, null);
-            NetworkCheckTimer.Start();
-        }
-
-        private async void CheckNetwork(object sender, object e)
-        {
-            IsNetworkChecked = false;
-            await Task.Delay(TimeSpan.FromSeconds(4));
-            IsNetworkChecked = true;
         }
         
         public void NavigateMenu(string pageName)

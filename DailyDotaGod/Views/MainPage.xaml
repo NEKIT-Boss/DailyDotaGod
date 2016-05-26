@@ -6,13 +6,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Foundation="using:Windows.Foundation"
     x:Class="DailyDotaGod.Views.MainPage"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Loading="Page_Loading">
 
     <Page.Resources>
         <ResourceDictionary>
             <local:ConnectionToIconConverter x:Key="ConnectionToIconConverter"/>
             <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-            <x:Double x:Key="wow">12</x:Double>
             
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/MainPageStyle.xaml"/>

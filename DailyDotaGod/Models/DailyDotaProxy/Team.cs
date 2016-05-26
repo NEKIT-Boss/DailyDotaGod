@@ -34,6 +34,11 @@ namespace DailyDotaGod.Models.DailyDotaProxy
         {
             get
             {
+                if (LogoEndpoint == "")
+                {
+                    return null;
+                }
+
                 const string imageUriPattern = @"http://dailydota2.com{0}";
                 return new Uri(string.Format(imageUriPattern, LogoEndpoint), UriKind.Absolute);
             }
@@ -47,6 +52,11 @@ namespace DailyDotaGod.Models.DailyDotaProxy
         {
             get
             {
+                if (CountryCode == "")
+                {
+                    return null;
+                }
+
                 const string imageUriPattern = @"http://dailydota2.com/images/cc/{0}.png";
                 return new Uri( string.Format(imageUriPattern, CountryCode), UriKind.Absolute);
             }

@@ -30,12 +30,13 @@ namespace DailyDotaGod.Views
     /// </summary>
     public sealed partial class HomePage : Page
     {
+        FavoritesViewModel VM { get; set; }
+
         public HomePage()
         {
-            Items = StorageManager.Instance.Teams;   
+            VM = new FavoritesViewModel(StorageManager.Instance.Teams);
             this.InitializeComponent();
         }
 
-        ObservableCollection<TeamViewModel> Items { get; set; }
     }
 }

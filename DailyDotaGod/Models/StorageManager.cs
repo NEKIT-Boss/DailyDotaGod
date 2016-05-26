@@ -31,13 +31,13 @@ namespace DailyDotaGod.Models
 
         private StorageManager()
         {
-            
+
         }
         #endregion
 
         public ObservableCollection<TeamViewModel> Teams { get; set; } = new ObservableCollection<TeamViewModel>();
 
-        public async Task<bool> SyncWithStorage()
+        public async Task<bool> SyncExposed()
         {
             using (var context = new StorageContext())
             {
@@ -45,7 +45,9 @@ namespace DailyDotaGod.Models
                 {
                     if (Teams.Count == 0)
                     {
-                        var teams = await context.Teams.ToListAsync();
+                        var teams = await Task.Factory.StartNew(() =>
+                            context.Teams.ToList());
+                        //var teams = await context.Teams.ToListAsync();
                         foreach (var team in teams)
                         {
                             Teams.Add(new TeamViewModel(team));
@@ -67,19 +69,29 @@ namespace DailyDotaGod.Models
         /// For now, we will try without interface
         /// Then just consider it, bc it makes sense, but I don't know
         /// Checks the team from DailyDota API, if it already is in database
+        /// Need to think about whether or not outside method must call it
         /// </summary>
         /// <param name="loadedTeam">The Json team to check</param>
         /// <returns>Whether or not team passed exists already in the storage</returns>
-        public bool TeamExists(DailyDotaProxy.Team loadedTeam)
+        public async Task<bool> TeamExists(DailyDotaProxy.Team loadedTeam)
         {
-            using (var context = new StorageContext())
+            return await Task.Run(() =>
             {
-                var storedTeam = context.Teams.FirstOrDefault((team) =>
-                    (loadedTeam.Name == team.Name && loadedTeam.Tag == team.Tag)
-                );
+                using (var context = new StorageContext())
+                {
+                    var storedTeam = context.Teams.FirstOrDefault((team) =>
+                        (loadedTeam.Name == team.Name && loadedTeam.Tag == team.Tag)
+                    );
 
-                return storedTeam != default(Data.Team);
-            }
+                    return storedTeam != default(Data.Team);
+                }
+            }).ConfigureAwait(false);
+        }
+
+        //I think that ie really bad
+        private async Task SyncToStorage(StorageContext context)
+        {
+            await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private bool CountryImageExists(string countryCode)
@@ -98,27 +110,36 @@ namespace DailyDotaGod.Models
         {
             return await Task.Run(async () =>
             {
-                byte[] rawData = await logoUri.DownloadRaw();
+                byte[] rawData = await logoUri.DownloadRawAsync();
+                if (rawData == null)
+                {
+                    return null;
+                }
 
                 return new TeamImage
                 {
                     Data = rawData,
                 };
-            });
+            }).ConfigureAwait(false);
         }
 
         private async Task<CountryImage> LoadCountryImageAsync(Uri logoUri, string countryCode)
         {
             return await Task.Run(async () =>
             {
-                byte[] rawData = await logoUri.DownloadRaw();
+                if (logoUri == null)
+                {
+                    return null;
+                }
+
+                byte[] rawData = await logoUri.DownloadRawAsync();
 
                 return new CountryImage
                 {
                     Data = rawData,
                     Code = countryCode
                 };
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -132,13 +153,14 @@ namespace DailyDotaGod.Models
             {
                 using (var context = new StorageContext())
                 {
-                    
+                    //Further must move it to separate methods
+
                     List<Task<TeamImage>> teamImagesTasks = new List<Task<TeamImage>>();
                     List<Task<CountryImage>> countryImagesTasks = new List<Task<CountryImage>>();
                     foreach (var loadedTeam in loadedTeams)
                     {
                         teamImagesTasks.Add( LoadTeamImageAsync(loadedTeam.LogoUrl) );
-                        if ( (loadedTeam.CountryCode != "") && (!CountryImageExists(loadedTeam.CountryCode)) )
+                        if ( !CountryImageExists(loadedTeam.CountryCode) )
                         {
                             countryImagesTasks.Add( LoadCountryImageAsync(loadedTeam.CountryLogoUrl, loadedTeam.CountryCode) );
                         }
@@ -146,13 +168,25 @@ namespace DailyDotaGod.Models
                     await Task.WhenAll(countryImagesTasks);
                     await Task.WhenAll(teamImagesTasks);
 
-                    TeamImage[] teamImages = teamImagesTasks.Select(teamImageTask => teamImageTask.Result).ToArray();
-                    context.TeamImages.AddRange(teamImages);
-                    await context.SaveChangesAsync();
+                    TeamImage[] teamImages = teamImagesTasks
+                        .Select(teamImageTask => teamImageTask.Result)
+                        .ToArray();
 
-                    CountryImage[] countryImages = countryImagesTasks.Select(countryImagesTask => countryImagesTask.Result).ToArray();
-                    context.CountryImages.AddRange(countryImages);
-                    await context.SaveChangesAsync();
+                    context.TeamImages.AddRange(
+                        teamImages.Where( teamImage => teamImage != null)
+                    );
+                    //await context.SaveChangesAsync();
+                    await SyncToStorage(context);
+
+                    CountryImage[] countryImages = countryImagesTasks
+                        .Select(countryImagesTask => countryImagesTask.Result)
+                        .ToArray();
+
+                    context.CountryImages.AddRange(
+                        countryImages.Where ( countryImage => countryImage != null )
+                    );
+                    //await context.SaveChangesAsync();
+                    await SyncToStorage(context);
 
                     List<Data.Team> teams = new List<Data.Team>();
                     for (int teamIndex = 0; teamIndex < loadedTeams.Count; teamIndex++)
@@ -169,10 +203,10 @@ namespace DailyDotaGod.Models
                         });
                     }
                     context.Teams.AddRange(teams);
+                    //await context.SaveChangesAsync();
+                    await SyncToStorage(context);
 
-                    await context.SaveChangesAsync();
-                    await SyncWithStorage();
-                    Debug.WriteLine($"Finished!");
+                    //await SyncExposed();
                     return true;
                 }
             }
