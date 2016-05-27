@@ -45,9 +45,7 @@ namespace DailyDotaGod.Models
                 {
                     if (Teams.Count == 0)
                     {
-                        var teams = await Task.Factory.StartNew(() =>
-                            context.Teams.ToList());
-                        //var teams = await context.Teams.ToListAsync();
+                        var teams = await context.Teams.ToListAsync();
                         foreach (var team in teams)
                         {
                             Teams.Add(new TeamViewModel(team));
@@ -73,19 +71,16 @@ namespace DailyDotaGod.Models
         /// </summary>
         /// <param name="loadedTeam">The Json team to check</param>
         /// <returns>Whether or not team passed exists already in the storage</returns>
-        public async Task<bool> TeamExists(DailyDotaProxy.Team loadedTeam)
+        public bool TeamExists(DailyDotaProxy.Team loadedTeam)
         {
-            return await Task.Run(() =>
+            using (var context = new StorageContext())
             {
-                using (var context = new StorageContext())
-                {
-                    var storedTeam = context.Teams.FirstOrDefault((team) =>
-                        (loadedTeam.Name == team.Name && loadedTeam.Tag == team.Tag)
-                    );
+                var storedTeam = context.Teams.FirstOrDefault((team) =>
+                    (loadedTeam.Name == team.Name && loadedTeam.Tag == team.Tag)
+                );
 
-                    return storedTeam != default(Data.Team);
-                }
-            }).ConfigureAwait(false);
+                return storedTeam != default(Data.Team);
+            }
         }
 
         //I think that ie really bad
@@ -147,7 +142,7 @@ namespace DailyDotaGod.Models
         /// </summary>
         /// <param name="loadedTeam">The team to add to database</param>
         /// <returns>Whether or not, the operation was successful</returns>
-        public async Task<bool> StoreTeams( List<DailyDotaProxy.Team> loadedTeams )
+        public async Task<bool> StoreTeams( IEnumerable<DailyDotaProxy.Team> loadedTeams )
         {
             try
             {
@@ -189,16 +184,16 @@ namespace DailyDotaGod.Models
                     await SyncToStorage(context);
 
                     List<Data.Team> teams = new List<Data.Team>();
-                    for (int teamIndex = 0; teamIndex < loadedTeams.Count; teamIndex++)
+                    for (int teamIndex = 0; teamIndex < loadedTeams.Count(); teamIndex++)
                     {
                         teams.Add(new Data.Team()
                         {
-                            Name = loadedTeams[teamIndex].Name,
-                            Tag = loadedTeams[teamIndex].Tag,
+                            Name = loadedTeams.ElementAt(teamIndex).Name,
+                            Tag = loadedTeams.ElementAt(teamIndex).Tag,
                             Logo = teamImages[teamIndex],
                             CountryLogo =
                                 context.CountryImages.FirstOrDefault( 
-                                    countryImage => countryImage.Code == loadedTeams[teamIndex].CountryCode
+                                    countryImage => countryImage.Code == loadedTeams.ElementAt(teamIndex).CountryCode
                                 )
                         });
                     }

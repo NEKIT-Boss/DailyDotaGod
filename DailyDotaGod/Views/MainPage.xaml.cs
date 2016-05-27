@@ -27,14 +27,14 @@ namespace DailyDotaGod.Views
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        Shell AppShell { get; set; }
+        Shell AppShell { get; set; } = null;
         DailyDotaLoader Loader { get; set; } = null;
 
         public MainPage()
         {
             this.InitializeComponent();
             AppShell = new Shell(null, MainMenuFrame);
-            Loader = new DailyDotaLoader(TimeSpan.FromSeconds(1));
+            Loader = new DailyDotaLoader(TimeSpan.FromSeconds(25));
             MenuListBox.SelectedIndex = 0;
         }
 
@@ -53,9 +53,8 @@ namespace DailyDotaGod.Views
 
         private async void Page_Loading(FrameworkElement sender, object args)
         {
-            //Debug.WriteLine("Loading event ended!");
-            await StorageManager.Instance.SyncExposed();
-            Loader.StartRequesting();
+            //await StorageManager.Instance.SyncExposed();
+            await  Loader.StartRequesting();
         }
     }
 }

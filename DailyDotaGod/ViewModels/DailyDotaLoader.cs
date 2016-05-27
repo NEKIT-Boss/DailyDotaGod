@@ -15,7 +15,7 @@ namespace DailyDotaGod.ViewModels
         private DailyDotaClient Client = DailyDotaClient.Instance;
         private StorageManager Storage = StorageManager.Instance;
 
-        private DispatcherTimer RequestTimer { get; set; } = null;
+        private DispatcherTimer ReloadTimer { get; set; } = null;
 
         private bool _isConnected = false;
         public bool IsConnected
@@ -31,7 +31,7 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
-        private bool _connectionChecking = false;
+        private bool _connectionChecking = true;
         public bool ConnectionChecking
         {
             get
@@ -45,102 +45,130 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
-        private TimeSpan _requestInterval;
-        public TimeSpan RequestInterval
+        private TimeSpan _reloadInterval;
+        public TimeSpan ReloadInterval
         {
             get
             {
-                return _requestInterval;
+                return _reloadInterval;
             }
 
             set
             {
-                _requestInterval = value;
+                _reloadInterval = value;
                 ReconfigureTimer();
             }
         }
 
-        private async void RequestData(object sender, object e)
+        private async Task<bool> CheckConnectionAsync()
         {
-            (sender as DispatcherTimer).Stop();
-
-            ConnectionChecking = true;
-
-            // Need to put that in config file
-            const int RECHECK_COUNT = 5;
-            for (int recheck = 0; recheck < RECHECK_COUNT; recheck++)
+            return await Task.Run(async () =>
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(800));
-                if (IsConnected = Client.IsConnnected)
+                const int TRIES_LIMIT = 5;
+                TimeSpan retryDelay = TimeSpan.FromSeconds(0.5);
+
+                for (int tryIndex = 0; tryIndex < TRIES_LIMIT; tryIndex++)
                 {
-                    break;
+                    if (Client.IsConnnected)
+                    {
+                        return true;
+                    }
+                    await Task.Delay(retryDelay).ConfigureAwait(false);
                 }
-            }
+                return false;
+            }).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// For now it tries to load, and stuff
+        /// </summary>
+        /// <returns>Whether or not the client is connected after all</returns>
+        private async Task<bool> LoadMatchesAsync()
+        {
+            return await Task.Run(async () =>
+           {
+               bool isConnected = await CheckConnectionAsync();
+               if (!isConnected)
+               {
+                   return isConnected;
+               }
+
+               MatchesInfo matchesInfo = await Client.RequestMatchesInfoAsync();
+               var teams = matchesInfo.Matches
+                .SelectMany(x => new Team[] { x.Team1, x.Team2 })
+                .Distinct();
+
+               var newTeams = from team in teams
+                              where !Storage.TeamExists(team)
+                              select team;
+
+               try
+               {
+                   if (newTeams.Any())
+                   {
+                       await Storage.StoreTeams(newTeams).ConfigureAwait(false);
+                   }
+               }
+               catch
+               {
+                   return false;
+               }
+
+               return true;
+           }).ConfigureAwait(false);
+        }
+
+        private async void LoadMatchesAsyncEvent(object sender, object e)
+        {
+            ConnectionChecking = true;
+            IsConnected = await CheckConnectionAsync();
 
             if (IsConnected)
             {
-                //Debug.WriteLine("Stepped into async load");
-                MatchesInfo matchesInfo = await Client.RequestMatchesInfoAsync();
-                //Debug.WriteLine("Stepped out async load");
-
-                var teams = matchesInfo.Matches.Select(match => match.Team1).Union(matchesInfo.Matches.Select(match => match.Team2)).ToList();
-
-                List<Team> newTeams = new List<Team>(); 
-                foreach (Team team in teams)
+                bool loadedAny = await LoadMatchesAsync();
+                if (loadedAny)
                 {
-                    if (! await Storage.TeamExists(team) )
-                    {
-                        newTeams.Add(team);
-                    }
-                }
-
-                if (newTeams.Count > 0)
-                {
-                    await Storage.StoreTeams(newTeams);
+                    await Storage.SyncExposed();
                 }
             }
 
-            await Storage.SyncExposed();
             ConnectionChecking = false;
         }
 
         private void ReconfigureTimer()
         {
-            if (RequestTimer.IsEnabled)
+            if (ReloadTimer.IsEnabled)
             {
-                RequestTimer.Stop();
-                RequestTimer.Interval = RequestInterval;
-                RequestTimer.Start();
+                ReloadTimer.Stop();
+                ReloadTimer.Interval = ReloadInterval;
+                ReloadTimer.Start();
             }
         }
 
         private void ConfigureTimer()
         {
-            RequestTimer.Tick += RequestData;
-            RequestTimer.Interval = RequestInterval;
+            ReloadTimer.Tick += LoadMatchesAsyncEvent;
+            ReloadTimer.Interval = ReloadInterval;
         }
 
-        public void StartRequesting()
+        public async Task StartRequesting()
         {
-            IsConnected = Client.IsConnnected;
+            ConnectionChecking = true;
+            IsConnected = await CheckConnectionAsync();
+            bool loadedAny = await LoadMatchesAsync();
+            if (loadedAny)
+            {
+                await Storage.SyncExposed();
+            }
 
-            if (IsConnected)
-            {
-                //Need to think about tricking timer, and consider real Task thing
-                //RequestData();
-                RequestTimer.Start();
-            }
-            else
-            {
-                ConnectionChecking = false;
-                RequestTimer.Start();
-            }
+            ReloadTimer.Start();
+            ConnectionChecking = false;
         }
 
         public DailyDotaLoader(TimeSpan requestInterval)
         {
-            RequestTimer = new DispatcherTimer();
-            RequestInterval = requestInterval;
+            ReloadTimer = new DispatcherTimer();
+            ReloadInterval = requestInterval;
             ConfigureTimer();
         }
     }
