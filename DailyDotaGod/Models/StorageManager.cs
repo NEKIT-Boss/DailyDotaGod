@@ -45,10 +45,16 @@ namespace DailyDotaGod.Models
                 {
                     if (Teams.Count == 0)
                     {
+                        await context.TeamImages.LoadAsync();
+                        await context.CountryImages.LoadAsync();
+
                         var teams = await context.Teams.ToListAsync();
-                        foreach (var team in teams)
+                        if (teams.Any())
                         {
-                            Teams.Add(new TeamViewModel(team));
+                            foreach (var team in teams)
+                            {
+                                Teams.Add(new TeamViewModel(team));
+                            }
                         }
                     }
 

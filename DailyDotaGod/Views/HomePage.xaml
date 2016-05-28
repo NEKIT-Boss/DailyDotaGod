@@ -9,7 +9,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListBox ItemsSource="{x:Bind VM.Teams}">
+        <ListBox ItemsSource="{x:Bind VM.Teams}" Background="{x:Null}">
             <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="ViewModels:TeamViewModel">
                     <TextBlock FontSize="20" Text="{x:Bind Name}" />

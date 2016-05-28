@@ -1,0 +1,37 @@
+﻿<Page
+    x:Class="DailyDotaGod.Views.FavoritesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DailyDotaGod.Views"
+    xmlns:ViewModels="using:DailyDotaGod.ViewModels" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <AutoSuggestBox RelativePanel.AlignHorizontalCenterWithPanel="True" Margin="0 50 0 0"
+                        Width="400" Text="{x:Bind VM.SearchText, Mode=TwoWay}" UpdateTextOnSelect="False" PlaceholderText="Добавить Команду"
+                        QueryIcon="Add" ItemsSource="{x:Bind VM.Teams, Mode=OneWay}" TextChanged="{x:Bind VM.Filter}"
+                        FontSize="16">
+            <AutoSuggestBox.ItemTemplate>
+                <DataTemplate x:DataType="ViewModels:TeamViewModel">
+                    <Grid Width="400" Height="50">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="90"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="16" Text="{x:Bind Name}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="12" Text="{x:Bind Tag}" Foreground="#FF333333" />
+                        <Image Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="{x:Bind Logo}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" Stretch="Fill"/>
+                    </Grid>
+                </DataTemplate>
+            </AutoSuggestBox.ItemTemplate>
+        </AutoSuggestBox>
+    </RelativePanel>
+</Page>

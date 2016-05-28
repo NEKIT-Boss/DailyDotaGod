@@ -49,5 +49,10 @@ namespace DailyDotaGod.ViewModels
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
-namespace DailyDotaGod.Views
+namespace DailyDotaGod.Views.Converters
 {
     class ConnectionToIconConverter : IValueConverter
     {

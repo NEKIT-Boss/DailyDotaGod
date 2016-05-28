@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DailyDotaGod.Models;
+using DailyDotaGod.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,14 +14,6 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using DailyDotaGod.Models;
-using Newtonsoft.Json;
-using DailyDotaGod.Models.DailyDotaProxy;
-using DailyDotaGod.Data;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.Storage.Streams;
-using System.Collections.ObjectModel;
-using DailyDotaGod.ViewModels;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -28,15 +22,15 @@ namespace DailyDotaGod.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class HomePage : Page
+    public sealed partial class FavoritesPage : Page
     {
         FavoritesViewModel VM { get; set; }
 
-        public HomePage()
+        public FavoritesPage()
         {
+            // Try that without data binding
             VM = new FavoritesViewModel();
             this.InitializeComponent();
         }
-
     }
 }

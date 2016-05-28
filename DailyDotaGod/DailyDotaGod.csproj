@@ -125,8 +125,11 @@
     <Compile Include="Views\AllMatchesPage.xaml.cs">
       <DependentUpon>AllMatchesPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\BoolToVisibilityConverter.cs" />
-    <Compile Include="Views\ConnectionToIconConverter.cs" />
+    <Compile Include="Views\Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Views\Converters\ConnectionToIconConverter.cs" />
+    <Compile Include="Views\FavoritesPage.xaml.cs">
+      <DependentUpon>FavoritesPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
@@ -157,6 +160,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Views\AllMatchesPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FavoritesPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -16,7 +16,7 @@ namespace DailyDotaGod.ViewModels
         private PageDictionary MainFramePages { get; set; }
         private Frame MainFrame { get; set; }
 
-        private Frame MainMenuFrame { get; set; }
+        public Frame MainMenuFrame { get; set; }
         private PageDictionary MainMenuPages { get; set; }
 
         private DispatcherTimer NetworkCheckTimer = new DispatcherTimer();
@@ -43,7 +43,8 @@ namespace DailyDotaGod.ViewModels
             MainMenuPages = new PageDictionary()
             {
                 { "Сводка", typeof(HomePage) },
-                { "Все Матчи", typeof(AllMatchesPage) }
+                { "Все Матчи", typeof(AllMatchesPage) },
+                { "Избранное", typeof(FavoritesPage) }
             };
 
             NavigateMenu("Сводка");
@@ -59,7 +60,13 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
-
+        public void GoBack()
+        {
+            if (MainMenuFrame.CanGoBack)
+            {
+                MainMenuFrame.GoBack();
+            }
+        }
 
        
     }
