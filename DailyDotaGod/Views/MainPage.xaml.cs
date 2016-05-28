@@ -33,7 +33,7 @@ namespace DailyDotaGod.Views
         public MainPage()
         {
             this.InitializeComponent();
-            AppShell = new Shell(null, MainMenuFrame);
+            AppShell = new Shell();
             Loader = new DailyDotaLoader(TimeSpan.FromSeconds(25));
             MenuListBox.SelectedIndex = 0;
         }
@@ -45,16 +45,41 @@ namespace DailyDotaGod.Views
 
         private void MenuListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ListBox menu = sender as ListBox;
+            if (MenuListBox.SelectedIndex != -1)
+            {
+                ListBox menu = sender as ListBox;
+                var pageNameTuple = AppShell.PageNameTuples[menu.SelectedIndex];
 
-            var selectedItem = menu.SelectedItem as ListBoxItem;
-            AppShell.NavigateMenu(selectedItem.Tag.ToString());
+                MainMenuFrame.Navigate(pageNameTuple.Item1);
+            }
+
         }
 
         private async void Page_Loading(FrameworkElement sender, object args)
         {
-            //await StorageManager.Instance.SyncExposed();
-            await  Loader.StartRequesting();
+            await StorageManager.Instance.SyncExposed(syncAll: true);
+            await Loader.StartRequesting();
+        }
+
+        private void MainMenuFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+            var pageNameTuple = AppShell.PageNameTuples.FirstOrDefault(x => x.Item1 == e.SourcePageType);
+            if (pageNameTuple != null)
+            {
+                MenuListBox.SelectedIndex = AppShell.PageNameTuples.IndexOf(pageNameTuple);
+                AppShell.MainMenuTitle = pageNameTuple.Item2;
+            }
+
+            else
+            {
+                MenuListBox.SelectedIndex = -1;
+                AppShell.MainMenuTitle = e.Parameter as string;
+            }
+        }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainMenuFrame.GoBack();
         }
     }
 }

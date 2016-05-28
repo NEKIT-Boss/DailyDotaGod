@@ -8,9 +8,10 @@ using DailyDotaGod.Data;
 namespace DailyDotaGod.Migrations
 {
     [DbContext(typeof(StorageContext))]
-    partial class StorageContextModelSnapshot : ModelSnapshot
+    [Migration("20160528061248_FavoriteTeamAdded")]
+    partial class FavoriteTeamAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.0-rc1-16348");

@@ -128,7 +128,7 @@ namespace DailyDotaGod.ViewModels
                 bool loadedAny = await LoadMatchesAsync();
                 if (loadedAny)
                 {
-                    await Storage.SyncExposed();
+                    await Storage.SyncExposed(syncTeams: true);
                 }
             }
 

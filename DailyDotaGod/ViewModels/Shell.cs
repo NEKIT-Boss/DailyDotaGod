@@ -13,13 +13,7 @@ namespace DailyDotaGod.ViewModels
 {
     class Shell : NotificationBase
     {
-        private PageDictionary MainFramePages { get; set; }
-        private Frame MainFrame { get; set; }
-
-        public Frame MainMenuFrame { get; set; }
-        private PageDictionary MainMenuPages { get; set; }
-
-        private DispatcherTimer NetworkCheckTimer = new DispatcherTimer();
+        public List<Tuple<Type, string>> PageNameTuples { get; set; }
 
         private string _mainMenuTitle;
         public string MainMenuTitle
@@ -35,39 +29,16 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
-        public Shell(Frame mainFrame, Frame mainMenuFrame)
+        public Shell()
         {
-            MainFrame = mainFrame;
-            MainMenuFrame = mainMenuFrame;
-
-            MainMenuPages = new PageDictionary()
+            PageNameTuples = new List<Tuple<Type, string>>
             {
-                { "Сводка", typeof(HomePage) },
-                { "Все Матчи", typeof(AllMatchesPage) },
-                { "Избранное", typeof(FavoritesPage) }
+                Tuple.Create(typeof(HomePage), "Сводка"),
+                Tuple.Create(typeof(AllMatchesPage), "Все Матчи"),
+                Tuple.Create(typeof(HomePage), "В эфире"),
+                Tuple.Create(typeof(HomePage), "Мое Расписание"),
+                Tuple.Create(typeof(FavoritesPage), "Избранное")
             };
-
-            NavigateMenu("Сводка");
         }
-        
-        public void NavigateMenu(string pageName)
-        {
-            Type nextPage = null;
-            if (MainMenuPages.TryGetValue(pageName, out nextPage))
-            {
-                MainMenuTitle = pageName;
-                MainMenuFrame.Navigate(nextPage);
-            }
-        }
-
-        public void GoBack()
-        {
-            if (MainMenuFrame.CanGoBack)
-            {
-                MainMenuFrame.GoBack();
-            }
-        }
-
-       
     }
 }

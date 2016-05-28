@@ -8,30 +8,54 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <AutoSuggestBox RelativePanel.AlignHorizontalCenterWithPanel="True" Margin="0 50 0 0"
-                        Width="400" Text="{x:Bind VM.SearchText, Mode=TwoWay}" UpdateTextOnSelect="False" PlaceholderText="Добавить Команду"
-                        QueryIcon="Add" ItemsSource="{x:Bind VM.Teams, Mode=OneWay}" TextChanged="{x:Bind VM.Filter}"
-                        FontSize="16">
-            <AutoSuggestBox.ItemTemplate>
-                <DataTemplate x:DataType="ViewModels:TeamViewModel">
-                    <Grid Width="400" Height="50">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="90"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="16" Text="{x:Bind Name}"/>
-                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="12" Text="{x:Bind Tag}" Foreground="#FF333333" />
-                        <Image Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="{x:Bind Logo}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" Stretch="Fill"/>
-                    </Grid>
+    <RelativePanel Background="#FFE6E6E6" >
+        <GridView Name="TeamsGrid"
+                  Header="Любимые команды"
+                  RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignTopWithPanel="True" Padding="30 0"
+                  Margin="0 50 0 0" MaxHeight="400" ItemsSource="{x:Bind FavoritesViewModel.Teams}">
+            <GridView.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding}" Margin="0 0 0 15"/>
                 </DataTemplate>
-            </AutoSuggestBox.ItemTemplate>
-        </AutoSuggestBox>
+            </GridView.HeaderTemplate>
+            
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="ViewModels:TeamViewModel">
+                    <RelativePanel Width="300" Height="145" Margin="1" BorderBrush="#FFEBEBEB" BorderThickness="2">
+                        <RelativePanel.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <CompositeTransform CenterY="0.5" CenterX="0.5" Rotation="-135" ScaleX="0.5" ScaleY="0.5"/>
+                                </LinearGradientBrush.RelativeTransform>
+                                <GradientStop Color="#FFF2F2F2" Offset="0.166"/>
+                                <GradientStop Color="White" Offset="0.188"/>
+                                <GradientStop Color="#FFE2E2E2" Offset="0.134"/>
+                            </LinearGradientBrush>
+                        </RelativePanel.Background>
+                        <Image x:Name="TeamImage" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="30 0 0 0" 
+                			Source="{x:Bind Logo}" Stretch="Fill" Width="130" Height="78"
+                            />
+
+                        <StackPanel RelativePanel.RightOf="TeamImage" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignRightWithPanel="True" Margin="15 0 0 0" >
+                            <TextBlock Text="{x:Bind Name}" FontSize="18" FontWeight="Bold"
+                				TextWrapping="WrapWholeWords"/>
+                            <TextBlock Text="{x:Bind Tag}" FontSize="14" FontWeight="Normal" Margin="0 5 0 0" 
+                				Foreground="#FF333333"/>
+                        </StackPanel>
+                    </RelativePanel>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+
+        <Button Width="300" Height="145" RelativePanel.AlignLeftWith="TeamsGrid" RelativePanel.Below="TeamsGrid" Margin="30 1 0 0" Click="Button_Click">
+            <Grid>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Segoe MDL2 Assets" Text="&#xE109;" FontSize="40" Foreground="White"/>
+            </Grid>
+
+            <Button.Background>
+                <SolidColorBrush Color="{StaticResource SystemAccentColor}"/>
+            </Button.Background>
+        </Button>
+
     </RelativePanel>
 </Page>

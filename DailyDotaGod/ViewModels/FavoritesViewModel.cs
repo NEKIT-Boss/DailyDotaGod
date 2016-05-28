@@ -1,8 +1,5 @@
-﻿using DailyDotaGod.Data;
-using DailyDotaGod.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,8 +8,7 @@ namespace DailyDotaGod.ViewModels
 {
     class FavoritesViewModel : NotificationBase
     {
-        private List<TeamViewModel> _teams = 
-            new List<TeamViewModel>();
+        private List<TeamViewModel> _teams;
         public List<TeamViewModel> Teams
         {
             get
@@ -26,31 +22,9 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
-        private string _searchText;
-        public string SearchText
+        public FavoritesViewModel(IEnumerable<TeamViewModel> teams)
         {
-            get
-            {
-                return _searchText;
-            }
-
-            set
-            {
-                SetProperty(ref _searchText, value);
-            }
-        }
-
-        public FavoritesViewModel()
-        {
-            Teams = new List<TeamViewModel>();
-        }
-
-        public void Filter()
-        {
-            Teams = StorageManager.Instance.Teams.Where(
-                x => x.Name.ToLower()
-                .Contains(SearchText.ToLower())
-            ).ToList();
+            Teams = new List<TeamViewModel>(teams);
         }
     }
 }

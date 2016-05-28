@@ -18,6 +18,9 @@ namespace DailyDotaGod.Data
         public DbSet<TeamImage> TeamImages { get; set; }
         public DbSet<CountryImage> CountryImages { get; set; }
 
+        //Favorites
+        public DbSet<FavoriteTeam> FavoriteTeams { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Filename=Storage.db");

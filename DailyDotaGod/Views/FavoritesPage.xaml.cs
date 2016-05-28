@@ -1,4 +1,5 @@
-﻿using DailyDotaGod.Models;
+﻿using DailyDotaGod.Data;
+using DailyDotaGod.Models;
 using DailyDotaGod.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -24,13 +25,22 @@ namespace DailyDotaGod.Views
     /// </summary>
     public sealed partial class FavoritesPage : Page
     {
-        FavoritesViewModel VM { get; set; }
+        FavoritesViewModel FavoritesViewModel { get; set; }
 
         public FavoritesPage()
         {
-            // Try that without data binding
-            VM = new FavoritesViewModel();
+            using (var context = new StorageContext())
+            {
+                var teams = StorageManager.Instance.Teams.ToList();
+                FavoritesViewModel = new FavoritesViewModel(teams);
+            }
             this.InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Frame mainMenuFrame = Parent as Frame;
+            mainMenuFrame.Navigate(typeof(AddFavoriteTeamPage), "Добавить команду");
         }
     }
 }

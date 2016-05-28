@@ -20,7 +20,7 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="#FFF2F2F2" >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -44,8 +44,8 @@
                     RelativePanel.RightOf="HamburgerButton"
                     FontFamily="Segoe MDL2 Assets" Content="&#xE112;" Background="Transparent"
                     Width="{StaticResource ClosedPaneWidth}" Height="{StaticResource ClosedPaneWidth}"
-                    Visibility="{x:Bind AppShell.MainMenuFrame.CanGoBack, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Click="{x:Bind AppShell.GoBack}"/>
+                    Visibility="{Binding CanGoBack, Converter={StaticResource BoolToVisibilityConverter}, ElementName=MainMenuFrame, Mode=OneWay}"
+                    Click="BackButton_Click"/>
 
             <TextBlock x:Name="MenuTitle"
                        RelativePanel.RightOf="BackButton"
@@ -176,7 +176,8 @@
 
             <SplitView.Content>
                 <Grid HorizontalAlignment="Stretch">
-                    <Frame x:Name="MainMenuFrame" Padding="15 5 5 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Content="{x:Null}"/>
+                    <Frame x:Name="MainMenuFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                           Content="{x:Null}" Navigated="MainMenuFrame_Navigated"/>
                 </Grid>
             </SplitView.Content>
         </SplitView>

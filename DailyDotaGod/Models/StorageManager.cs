@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using Microsoft.Data.Entity;
 using DailyDotaGod.ViewModels;
+using System.Collections;
 
 namespace DailyDotaGod.Models
 {
@@ -36,17 +37,32 @@ namespace DailyDotaGod.Models
         #endregion
 
         public ObservableCollection<TeamViewModel> Teams { get; set; } = new ObservableCollection<TeamViewModel>();
+        public ObservableCollection<TeamViewModel> FavoriteTeams { get; set; } = new ObservableCollection<TeamViewModel>();
+        //Here we define that, and I wish som two way data binding, like, no just store favorite team we need, and then sync exposed
 
-        public async Task<bool> SyncExposed()
+
+        public async Task<bool> SyncExposed(bool syncAll = false, bool syncTeams = false, bool syncFavorites = false, bool syncLeagues = false, bool syncMatches = false)
         {
             using (var context = new StorageContext())
             {
+                if (syncAll)
+                {
+                    syncTeams = true;
+                    syncFavorites = true;
+                    syncLeagues = true;
+                    syncMatches = true;
+                }
+
                 try
                 {
-                    if (Teams.Count == 0)
+                    if (syncTeams)
                     {
+                        //Think of doing that smartly, but later
+                        //Task[] imageLoadingTasks = new Task[2];
                         await context.TeamImages.LoadAsync();
                         await context.CountryImages.LoadAsync();
+
+                        //await Task.WhenAll(imageLoadingTasks);
 
                         var teams = await context.Teams.ToListAsync();
                         if (teams.Any())
