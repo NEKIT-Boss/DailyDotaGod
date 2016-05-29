@@ -36,7 +36,7 @@ namespace DailyDotaGod.ViewModels
                 Tuple.Create(typeof(HomePage), "Сводка"),
                 Tuple.Create(typeof(AllMatchesPage), "Все Матчи"),
                 Tuple.Create(typeof(HomePage), "В эфире"),
-                Tuple.Create(typeof(HomePage), "Мое Расписание"),
+                Tuple.Create(typeof(ScheduledMatchesPage), "Мое Расписание"),
                 Tuple.Create(typeof(FavoritesPage), "Избранное")
             };
         }

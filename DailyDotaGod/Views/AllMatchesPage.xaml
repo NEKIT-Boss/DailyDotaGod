@@ -18,13 +18,24 @@
                         <TextBlock Text="VS" FontSize="12"
                                    RelativePanel.Below="BestOf" RelativePanel.AlignHorizontalCenterWith="BestOf"
                                    Margin="0 5 0 0"/>
-                        <Image Source="{x:Bind RadiantTeam.Logo}" Width="100" Height="60"
+                        <Image Name="RadiantLogo" Source="{x:Bind RadiantTeam.Logo}" Width="100" Height="60"
                                RelativePanel.LeftOf="BestOf" RelativePanel.AlignVerticalCenterWithPanel="True"
                                Margin="0 0 15 0"/>
 
-                        <Image Source="{x:Bind DireTeam.Logo}" Width="75" Height="45"
+                        <TextBlock Text="{x:Bind RadiantTeam.Tag}" FontSize="14"
+                                   RelativePanel.Below="RadiantLogo" RelativePanel.AlignHorizontalCenterWith="RadiantLogo"
+                                   Margin="0 5 0 0" TextAlignment="Center"/>
+
+                        <Image Name="DireLogo"  Source="{x:Bind DireTeam.Logo}" Width="100" Height="60"
                                RelativePanel.RightOf="BestOf" RelativePanel.AlignVerticalCenterWithPanel="True"
                                Margin="15 0 0 0"/>
+
+                        <TextBlock Text="{x:Bind DireTeam.Tag}" FontSize="14"
+                                   RelativePanel.Below="DireLogo" RelativePanel.AlignHorizontalCenterWith="DireLogo"
+                                   Margin="0 5 0 0" TextAlignment="Center"/>
+                        
+                        <Button RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignRightWithPanel="True"
+                                Margin="0 5 5 0" FontFamily="Segoe MDL2 Assets" Content="&#xE1CB;" Click="{x:Bind ScheduleEvent}"/>
                     </RelativePanel>
                 </DataTemplate>
             </GridView.ItemTemplate>

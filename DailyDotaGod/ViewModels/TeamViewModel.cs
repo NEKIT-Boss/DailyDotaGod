@@ -40,6 +40,11 @@ namespace DailyDotaGod.ViewModels
                 {
                     using (DataWriter writer = new DataWriter(stream.GetOutputStreamAt(0)))
                     {
+                        if (This.Logo == null)
+                        {
+                            return new BitmapImage(new Uri("ms-appx://DailyDotaGod/Assets/UnknownTeam.png"));
+                        }
+
                         writer.WriteBytes(This.Logo.Data);
                         writer.StoreAsync().AsTask().Wait();
                     }

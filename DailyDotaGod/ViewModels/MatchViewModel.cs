@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Appointments;
+using Windows.Foundation;
 
 namespace DailyDotaGod.ViewModels
 {
@@ -67,6 +69,20 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
+        public async Task ScheduleEvent()
+        {
+            var matchAppointment = new Appointment();
+            matchAppointment.Subject = $"{RadiantTeam} vs {DireTeam} скоро!";
+            matchAppointment.Details = "DailyDotaGod проследит за тем, чтобы ты не пропустил ни одного важного матча!";
+
+            matchAppointment.Location = "На ламповом Твиче";
+            matchAppointment.StartTime = This.StartTime;
+            matchAppointment.Reminder = TimeSpan.FromMinutes(15);
+            matchAppointment.Duration = TimeSpan.FromHours(3);
+
+            string appointmentId = await AppointmentManager.ShowAddAppointmentAsync(
+                                   matchAppointment, new Rect( new Point(0, 0), new Size(400, 400) ), Windows.UI.Popups.Placement.Default);
+        }
 
         public MatchViewModel(Match thing) : base(thing)
         {
