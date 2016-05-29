@@ -81,6 +81,18 @@ namespace DailyDotaGod.Migrations
                     b.HasKey("Id");
                 });
 
+            modelBuilder.Entity("DailyDotaGod.Data.ScheduledMatch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AppointmentId");
+
+                    b.Property<int?>("MatchId");
+
+                    b.HasKey("Id");
+                });
+
             modelBuilder.Entity("DailyDotaGod.Data.Team", b =>
                 {
                     b.Property<int>("Id")
@@ -134,6 +146,13 @@ namespace DailyDotaGod.Migrations
                     b.HasOne("DailyDotaGod.Data.Team")
                         .WithMany()
                         .HasForeignKey("Team2Id");
+                });
+
+            modelBuilder.Entity("DailyDotaGod.Data.ScheduledMatch", b =>
+                {
+                    b.HasOne("DailyDotaGod.Data.Match")
+                        .WithMany()
+                        .HasForeignKey("MatchId");
                 });
 
             modelBuilder.Entity("DailyDotaGod.Data.Team", b =>

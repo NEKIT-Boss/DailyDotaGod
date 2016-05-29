@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DailyDotaGod.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,9 +23,17 @@ namespace DailyDotaGod.Views
     /// </summary>
     public sealed partial class ScheduledMatchesPage : Page
     {
+        SchedulerViewModel Scheduler { get; set; }
+
         public ScheduledMatchesPage()
         {
+            Scheduler = new SchedulerViewModel();
             this.InitializeComponent();
+        }
+
+        private async void Page_Loading(FrameworkElement sender, object args)
+        {
+            await Scheduler.Load();
         }
     }
 }

@@ -8,8 +8,8 @@ using DailyDotaGod.Data;
 namespace DailyDotaGod.Migrations
 {
     [DbContext(typeof(StorageContext))]
-    [Migration("20160528061248_FavoriteTeamAdded")]
-    partial class FavoriteTeamAdded
+    [Migration("20160529185559_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -82,6 +82,18 @@ namespace DailyDotaGod.Migrations
                     b.HasKey("Id");
                 });
 
+            modelBuilder.Entity("DailyDotaGod.Data.ScheduledMatch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AppointmentId");
+
+                    b.Property<int?>("MatchId");
+
+                    b.HasKey("Id");
+                });
+
             modelBuilder.Entity("DailyDotaGod.Data.Team", b =>
                 {
                     b.Property<int>("Id")
@@ -135,6 +147,13 @@ namespace DailyDotaGod.Migrations
                     b.HasOne("DailyDotaGod.Data.Team")
                         .WithMany()
                         .HasForeignKey("Team2Id");
+                });
+
+            modelBuilder.Entity("DailyDotaGod.Data.ScheduledMatch", b =>
+                {
+                    b.HasOne("DailyDotaGod.Data.Match")
+                        .WithMany()
+                        .HasForeignKey("MatchId");
                 });
 
             modelBuilder.Entity("DailyDotaGod.Data.Team", b =>

@@ -21,6 +21,9 @@ namespace DailyDotaGod.Data
         //Favorites
         public DbSet<FavoriteTeam> FavoriteTeams { get; set; }
 
+        //Calendar entites
+        public DbSet<ScheduledMatch> ScheduledMatches { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Filename=Storage.db");

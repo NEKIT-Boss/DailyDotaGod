@@ -230,5 +230,47 @@ namespace DailyDotaGod.Models
             }
         }
 
+        public async Task<bool> StoreScheduledMatch(Data.Match match, string appointmentId) 
+        {
+            using (var context = new StorageContext())
+            {
+                try
+                {
+                    ScheduledMatch scheduled = new ScheduledMatch()
+                    {
+                        Match = match,
+                        AppointmentId = appointmentId
+                    };
+
+                    context.ScheduledMatches.Add(scheduled);
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        public async Task<bool> RemoveScheduledMatch(string appointmentId)
+        {
+            using (var context = new StorageContext())
+            {
+                try
+                {
+                    context.ScheduledMatches.Remove(await context.ScheduledMatches.FirstAsync(x => x.AppointmentId == appointmentId));
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
     }
 }

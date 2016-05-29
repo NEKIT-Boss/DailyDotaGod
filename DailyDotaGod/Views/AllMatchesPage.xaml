@@ -11,10 +11,14 @@
     <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}">
         <GridView ItemsSource="{x:Bind VM.Matches, Mode=OneWay}" HorizontalAlignment="Center">
             <GridView.ItemTemplate >
-                <DataTemplate x:DataType="ViewModels:MatchViewModel">
+                <DataTemplate x:DataType="ViewModels:SchedulableMatchViewModel">
                     <RelativePanel Width="300" Height="145" Background="White" BorderBrush="#FFEBEBEB" BorderThickness="2">
-                        <TextBlock Name="BestOf" Text="{x:Bind BestOf}" FontSize="12" FontWeight="Bold"
-                                   RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True"/>
+
+                        <StackPanel Name="BestOf" Orientation="Horizontal"
+                                    RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True">
+                            <TextBlock  Text="Best Of" FontSize="12" FontWeight="Bold"/>
+                            <TextBlock  Text="{x:Bind BestOf}" FontSize="12" FontWeight="Bold" Margin="3 0 0 0"/>
+                        </StackPanel>
                         <TextBlock Text="VS" FontSize="12"
                                    RelativePanel.Below="BestOf" RelativePanel.AlignHorizontalCenterWith="BestOf"
                                    Margin="0 5 0 0"/>
@@ -34,8 +38,9 @@
                                    RelativePanel.Below="DireLogo" RelativePanel.AlignHorizontalCenterWith="DireLogo"
                                    Margin="0 5 0 0" TextAlignment="Center"/>
                         
-                        <Button RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignRightWithPanel="True"
-                                Margin="0 5 5 0" FontFamily="Segoe MDL2 Assets" Content="&#xE1CB;" Click="{x:Bind ScheduleEvent}"/>
+                        <ToggleButton RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignRightWithPanel="True"
+                                Margin="0 5 5 0" FontFamily="Segoe MDL2 Assets" Content="&#xE1CB;"
+                                IsChecked="{x:Bind IsScheduled, Mode=OneWay}" Click="{x:Bind ScheduleEvent}"/>
                     </RelativePanel>
                 </DataTemplate>
             </GridView.ItemTemplate>

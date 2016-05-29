@@ -18,8 +18,8 @@ namespace DailyDotaGod.ViewModels
     {
         CoreDispatcher dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-        private List<MatchViewModel> _matches = new List<MatchViewModel>();
-        public List<MatchViewModel> Matches
+        private List<SchedulableMatchViewModel> _matches = new List<SchedulableMatchViewModel>();
+        public List<SchedulableMatchViewModel> Matches
         {
             get
             {
@@ -52,7 +52,7 @@ namespace DailyDotaGod.ViewModels
                     .ToListAsync();
 
                 Matches = await (from match in matches
-                                 select new MatchViewModel(match))
+                                 select new SchedulableMatchViewModel(match))
                                 .ToAsyncEnumerable()
                                 .ToList();
             }
