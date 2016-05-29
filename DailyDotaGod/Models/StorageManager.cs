@@ -17,7 +17,7 @@ using System.Collections;
 
 namespace DailyDotaGod.Models
 {
-    class StorageManager
+    class StorageManager : NotificationBase
     {
 
         #region Singletone
@@ -36,53 +36,23 @@ namespace DailyDotaGod.Models
         }
         #endregion
 
-        public ObservableCollection<TeamViewModel> Teams { get; set; } = new ObservableCollection<TeamViewModel>();
-        public ObservableCollection<TeamViewModel> FavoriteTeams { get; set; } = new ObservableCollection<TeamViewModel>();
-        //Here we define that, and I wish som two way data binding, like, no just store favorite team we need, and then sync exposed
-
-
-        public async Task<bool> SyncExposed(bool syncAll = false, bool syncTeams = false, bool syncFavorites = false, bool syncLeagues = false, bool syncMatches = false)
+        private bool _updateNotifier;
+        public bool UpdateNotifier
         {
-            using (var context = new StorageContext())
+            get
             {
-                if (syncAll)
-                {
-                    syncTeams = true;
-                    syncFavorites = true;
-                    syncLeagues = true;
-                    syncMatches = true;
-                }
-
-                try
-                {
-                    if (syncTeams)
-                    {
-                        //Think of doing that smartly, but later
-                        //Task[] imageLoadingTasks = new Task[2];
-                        await context.TeamImages.LoadAsync();
-                        await context.CountryImages.LoadAsync();
-
-                        //await Task.WhenAll(imageLoadingTasks);
-
-                        var teams = await context.Teams.ToListAsync();
-                        if (teams.Any())
-                        {
-                            foreach (var team in teams)
-                            {
-                                Teams.Add(new TeamViewModel(team));
-                            }
-                        }
-                    }
-
-                    return true;
-                }
-
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                    return false;
-                }
+                return _updateNotifier;
             }
+
+            set
+            {
+                SetProperty(ref _updateNotifier, value);
+            }
+        }
+
+        private void Notify()
+        {
+            UpdateNotifier = !UpdateNotifier;
         }
 
         /// <summary>
@@ -105,11 +75,20 @@ namespace DailyDotaGod.Models
             }
         }
 
-        //I think that ie really bad
-        private async Task SyncToStorage(StorageContext context)
+        internal bool MatchExists(DailyDotaProxy.Match match)
         {
-            await context.SaveChangesAsync().ConfigureAwait(false);
+            using (var context = new StorageContext())
+            {
+                var storedMatch = context.Matches.FirstOrDefault( (x) =>
+                    x.StartTime == match.StartTime
+                        && x.Team1.Name == match.Team1.Name
+                        && x.Team2.Name == match.Team2.Name
+                    );
+
+                return storedMatch != default(Data.Match);
+            }
         }
+
 
         private bool CountryImageExists(string countryCode)
         {
@@ -164,22 +143,20 @@ namespace DailyDotaGod.Models
         /// </summary>
         /// <param name="loadedTeam">The team to add to database</param>
         /// <returns>Whether or not, the operation was successful</returns>
-        public async Task<bool> StoreTeams( IEnumerable<DailyDotaProxy.Team> loadedTeams )
+        public async Task<bool> StoreTeams( IEnumerable<DailyDotaProxy.Team> newTeams )
         {
             try
             {
                 using (var context = new StorageContext())
                 {
-                    //Further must move it to separate methods
-
                     List<Task<TeamImage>> teamImagesTasks = new List<Task<TeamImage>>();
                     List<Task<CountryImage>> countryImagesTasks = new List<Task<CountryImage>>();
-                    foreach (var loadedTeam in loadedTeams)
+                    foreach (var newTeam in newTeams)
                     {
-                        teamImagesTasks.Add( LoadTeamImageAsync(loadedTeam.LogoUrl) );
-                        if ( !CountryImageExists(loadedTeam.CountryCode) )
+                        teamImagesTasks.Add( LoadTeamImageAsync(newTeam.LogoUrl) );
+                        if ( !CountryImageExists(newTeam.CountryCode) )
                         {
-                            countryImagesTasks.Add( LoadCountryImageAsync(loadedTeam.CountryLogoUrl, loadedTeam.CountryCode) );
+                            countryImagesTasks.Add( LoadCountryImageAsync(newTeam.CountryLogoUrl, newTeam.CountryCode) );
                         }
                     }
                     await Task.WhenAll(countryImagesTasks);
@@ -192,8 +169,7 @@ namespace DailyDotaGod.Models
                     context.TeamImages.AddRange(
                         teamImages.Where( teamImage => teamImage != null)
                     );
-                    //await context.SaveChangesAsync();
-                    await SyncToStorage(context);
+                    await context.SaveChangesAsync();
 
                     CountryImage[] countryImages = countryImagesTasks
                         .Select(countryImagesTask => countryImagesTask.Result)
@@ -202,28 +178,26 @@ namespace DailyDotaGod.Models
                     context.CountryImages.AddRange(
                         countryImages.Where ( countryImage => countryImage != null )
                     );
-                    //await context.SaveChangesAsync();
-                    await SyncToStorage(context);
+                    await context.SaveChangesAsync();
 
                     List<Data.Team> teams = new List<Data.Team>();
-                    for (int teamIndex = 0; teamIndex < loadedTeams.Count(); teamIndex++)
+                    for (int teamIndex = 0; teamIndex < newTeams.Count(); teamIndex++)
                     {
                         teams.Add(new Data.Team()
                         {
-                            Name = loadedTeams.ElementAt(teamIndex).Name,
-                            Tag = loadedTeams.ElementAt(teamIndex).Tag,
+                            Name = newTeams.ElementAt(teamIndex).Name,
+                            Tag = newTeams.ElementAt(teamIndex).Tag,
                             Logo = teamImages[teamIndex],
                             CountryLogo =
                                 context.CountryImages.FirstOrDefault( 
-                                    countryImage => countryImage.Code == loadedTeams.ElementAt(teamIndex).CountryCode
+                                    countryImage => countryImage.Code == newTeams.ElementAt(teamIndex).CountryCode
                                 )
                         });
                     }
                     context.Teams.AddRange(teams);
-                    //await context.SaveChangesAsync();
-                    await SyncToStorage(context);
+                    await context.SaveChangesAsync();
+                    Notify();
 
-                    //await SyncExposed();
                     return true;
                 }
             }
@@ -231,6 +205,28 @@ namespace DailyDotaGod.Models
             catch
             {
                 return false;
+            }
+        }
+
+        public async Task StoreMatches(IEnumerable<DailyDotaProxy.Match> loadedMatches)
+        {
+            using (var context = new StorageContext())
+            {
+                foreach( var loadedMatch in loadedMatches)
+                {
+                    context.Matches.Add(new Data.Match
+                    {
+                        BestOf = loadedMatch.BestOf,
+                        League = null,
+                        LiveStatus = loadedMatch.LiveStatus,
+                        StartTime = loadedMatch.StartTime,
+                        Team1 = await context.Teams.FirstAsync( x => x.Name == loadedMatch.Team1.Name ),
+                        Team2 = await context.Teams.FirstAsync( x => x.Name == loadedMatch.Team2.Name ),
+                    });
+                }
+
+                await context.SaveChangesAsync();
+                Notify();
             }
         }
 

@@ -29,11 +29,7 @@ namespace DailyDotaGod.Views
 
         public FavoritesPage()
         {
-            using (var context = new StorageContext())
-            {
-                var teams = StorageManager.Instance.Teams.ToList();
-                FavoritesViewModel = new FavoritesViewModel(teams);
-            }
+            FavoritesViewModel = new FavoritesViewModel();
             this.InitializeComponent();
         }
 
@@ -41,6 +37,12 @@ namespace DailyDotaGod.Views
         {
             Frame mainMenuFrame = Parent as Frame;
             mainMenuFrame.Navigate(typeof(AddFavoriteTeamPage), "Добавить команду");
+        }
+
+        private async void Page_Loading(FrameworkElement sender, object args)
+        {
+            await FavoritesViewModel.Load();
+            AddTeamButton.Visibility = Visibility.Visible;
         }
     }
 }

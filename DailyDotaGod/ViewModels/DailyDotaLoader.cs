@@ -1,4 +1,5 @@
-﻿using DailyDotaGod.Models;
+﻿using DailyDotaGod.Data;
+using DailyDotaGod.Models;
 using DailyDotaGod.Models.DailyDotaProxy;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,20 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
+        private bool _updated;
+        public bool Updated
+        {
+            get
+            {
+                return _updated;
+            }
+
+            set
+            {
+                SetProperty(ref _updated, value);
+            }
+        }
+
         private TimeSpan _reloadInterval;
         public TimeSpan ReloadInterval
         {
@@ -87,15 +102,17 @@ namespace DailyDotaGod.ViewModels
         {
             return await Task.Run(async () =>
            {
+               bool loadedAny = false;
+
                bool isConnected = await CheckConnectionAsync();
                if (!isConnected)
                {
-                   return isConnected;
+                   return loadedAny;
                }
 
                MatchesInfo matchesInfo = await Client.RequestMatchesInfoAsync();
                var teams = matchesInfo.Matches
-                .SelectMany(x => new Team[] { x.Team1, x.Team2 })
+                .SelectMany(x => new Models.DailyDotaProxy.Team[] { x.Team1, x.Team2 })
                 .Distinct();
 
                var newTeams = from team in teams
@@ -106,7 +123,8 @@ namespace DailyDotaGod.ViewModels
                {
                    if (newTeams.Any())
                    {
-                       await Storage.StoreTeams(newTeams).ConfigureAwait(false);
+                       await Storage.StoreTeams(newTeams);
+                       loadedAny = true;
                    }
                }
                catch
@@ -114,7 +132,25 @@ namespace DailyDotaGod.ViewModels
                    return false;
                }
 
-               return true;
+               var newMatches = from match in matchesInfo.Matches
+                             where !Storage.MatchExists(match)
+                             select match;
+
+               try
+               {
+                   if (newMatches.Any())
+                   {
+                       await Storage.StoreMatches(newMatches);
+                       loadedAny = true;
+                   }
+               }
+
+               catch
+               {
+                   return false;
+               }
+
+               return loadedAny;
            }).ConfigureAwait(false);
         }
 
@@ -128,7 +164,7 @@ namespace DailyDotaGod.ViewModels
                 bool loadedAny = await LoadMatchesAsync();
                 if (loadedAny)
                 {
-                    await Storage.SyncExposed(syncTeams: true);
+                    Debug.WriteLine("Loaded new!");
                 }
             }
 
@@ -155,11 +191,7 @@ namespace DailyDotaGod.ViewModels
         {
             ConnectionChecking = true;
             IsConnected = await CheckConnectionAsync();
-            bool loadedAny = await LoadMatchesAsync();
-            if (loadedAny)
-            {
-                await Storage.SyncExposed();
-            }
+            await LoadMatchesAsync();
 
             ReloadTimer.Start();
             ConnectionChecking = false;

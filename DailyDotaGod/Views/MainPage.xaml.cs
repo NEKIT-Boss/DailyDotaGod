@@ -57,7 +57,6 @@ namespace DailyDotaGod.Views
 
         private async void Page_Loading(FrameworkElement sender, object args)
         {
-            await StorageManager.Instance.SyncExposed(syncAll: true);
             await Loader.StartRequesting();
         }
 

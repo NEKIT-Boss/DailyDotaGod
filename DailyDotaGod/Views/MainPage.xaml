@@ -175,10 +175,10 @@
             </SplitView.Pane>
 
             <SplitView.Content>
-                <Grid HorizontalAlignment="Stretch">
-                    <Frame x:Name="MainMenuFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                           Content="{x:Null}" Navigated="MainMenuFrame_Navigated"/>
-                </Grid>
+                <ScrollViewer >
+                    <Frame x:Name="MainMenuFrame"
+                               Content="{x:Null}" Navigated="MainMenuFrame_Navigated"/>
+                </ScrollViewer>
             </SplitView.Content>
         </SplitView>
     </Grid>

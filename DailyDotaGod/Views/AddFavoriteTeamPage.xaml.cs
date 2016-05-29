@@ -1,4 +1,5 @@
-﻿using DailyDotaGod.ViewModels;
+﻿using DailyDotaGod.Data;
+using DailyDotaGod.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,6 +30,24 @@ namespace DailyDotaGod.Views
         {
             AddingViewModel = new FavoriteTeamAddingViewModel();
             this.InitializeComponent();
+        }
+
+        private async void SuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (args.ChosenSuggestion != null)
+            {
+                using (var context = new StorageContext())
+                {
+                    Team chosen = (args.ChosenSuggestion as TeamViewModel);
+                    context.FavoriteTeams.Add(new FavoriteTeam
+                    {
+                        Points = 100,
+                        Team = chosen
+                    });
+                    await context.SaveChangesAsync();
+                    (Parent as Frame).GoBack();
+                }
+            }
         }
     }
 }

@@ -43,6 +43,20 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
+        private TeamViewModel _selected;
+        public TeamViewModel Selected
+        {
+            get
+            {
+                return _selected;
+            }
+
+            set
+            {
+                SetProperty(ref _selected, value);
+            }
+        }
+
         public FavoriteTeamAddingViewModel()
         {
             using (var context = new StorageContext())

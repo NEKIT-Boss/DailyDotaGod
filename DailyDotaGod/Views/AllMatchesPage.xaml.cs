@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DailyDotaGod.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,9 +23,22 @@ namespace DailyDotaGod.Views
     /// </summary>
     public sealed partial class AllMatchesPage : Page
     {
+        AllMatchesViewModel VM { get; set; }
+
         public AllMatchesPage()
         {
+            VM = new AllMatchesViewModel();
             this.InitializeComponent();
+        }
+
+        private async void Page_Loading(FrameworkElement sender, object args)
+        {
+            await VM.Load();
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            VM.Dispose();
         }
     }
 }

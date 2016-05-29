@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <RelativePanel Background="{StaticResource AppBarBackgroundThemeBrush}">
         <Grid x:Name="AlignGrid"  RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True"
               Margin="0 70 0 0">
             <Grid.ColumnDefinitions>
@@ -19,8 +19,8 @@
 
             <AutoSuggestBox Name="SuggestBox" Grid.Column="1"
                         Text="{x:Bind AddingViewModel.SearchText, Mode=TwoWay}" UpdateTextOnSelect="False" PlaceholderText="Команда"
-                        QueryIcon="Add" ItemsSource="{x:Bind AddingViewModel.Shown, Mode=OneWay}" 
-                        TextChanged="{x:Bind AddingViewModel.Filter}" QuerySubmitted=""
+                        QueryIcon="Add" ItemsSource="{x:Bind AddingViewModel.Shown, Mode=OneWay}"
+                        TextChanged="{x:Bind AddingViewModel.Filter}" QuerySubmitted="SuggestBox_QuerySubmitted"
                         FontSize="16">
                 
                 <AutoSuggestBox.ItemTemplate>
