@@ -14,7 +14,7 @@
     </Page.Resources>
     
     <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}">
-        <ListView ItemsSource="{x:Bind Scheduler.Matches}" Margin="15 15 15 0">
+        <ListView ItemsSource="{x:Bind Scheduler.Matches}" Margin="15 15 15 0" SelectionMode="None">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
@@ -23,40 +23,90 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="ViewModels:SchedulableMatchViewModel">
-                    <RelativePanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="200" Background="White" Margin="0 5" BorderBrush="#FFBBBBBB" BorderThickness="2">
-                        <Image Name="RadiantLogo" Source="{x:Bind RadiantTeam.Logo}" Width="175" Height="105"
-                               RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True"
-                               Margin="25 0 0 0"/>
+                    <UserControl>
+                        <RelativePanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="200" Background="White" Margin="0 5" BorderBrush="#FFBBBBBB" BorderThickness="2">
+                            <Image x:Name="RadiantLogo" Source="{x:Bind RadiantTeam.Logo}" RelativePanel.AlignLeftWithPanel="True"/>
 
-                        <StackPanel Name="RadiantTitle" RelativePanel.RightOf="RadiantLogo" RelativePanel.AlignBottomWith="RadiantLogo"
-                                    Margin="15 0 0 0">
-                            <TextBlock Text="{x:Bind RadiantTeam.Name}" FontSize="18"/>
-                            <TextBlock Text="{x:Bind RadiantTeam.Tag}" FontSize="16" Foreground="#FF333333" FontStyle="Italic"/>
-                        </StackPanel>
+                            <StackPanel x:Name="RadiantTitle" >
+                                <TextBlock Text="{x:Bind RadiantTeam.Name}" FontSize="18"/>
+                                <TextBlock Text="{x:Bind RadiantTeam.Tag}" FontSize="16" Foreground="#FF333333" FontStyle="Italic"/>
+                            </StackPanel>
 
-                        <Image Name="DireLogo" Source="{x:Bind DireTeam.Logo}" Width="175" Height="105"
-                               RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True"
-                               Margin="0 0 25 0"/>
+                            <Image x:Name="DireLogo" Source="{x:Bind DireTeam.Logo}" RelativePanel.AlignRightWithPanel="True"/>
 
-                        <StackPanel RelativePanel.LeftOf="DireLogo" RelativePanel.AlignBottomWith="RadiantLogo"
-                                    Margin="0 0 15 0">
-                            <TextBlock Text="{x:Bind DireTeam.Name}" FontSize="18" TextAlignment="Right"/>
-                            <TextBlock Text="{x:Bind DireTeam.Tag}" FontSize="16" Foreground="#FF333333" TextAlignment="Right" FontStyle="Italic"/>
-                        </StackPanel>
+                            <StackPanel x:Name="DireTitle">
+                                <TextBlock Text="{x:Bind DireTeam.Name}" FontSize="18" TextAlignment="Right"/>
+                                <TextBlock Text="{x:Bind DireTeam.Tag}" FontSize="16" Foreground="#FF333333" TextAlignment="Right" FontStyle="Italic"/>
+                            </StackPanel>
 
-                        <TextBlock Name="Timer" Style="{StaticResource HeaderTextBlockStyle}" Text="{x:Bind TimeLeftReadable, Mode=OneWay}"
-                                   RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWith="RadiantTitle"/>
+                            <TextBlock Name="Timer" Style="{StaticResource HeaderTextBlockStyle}" Text="{x:Bind TimeLeftReadable, Mode=OneWay}"
+                                   RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWith="RadiantLogo"/>
 
-                        <TextBlock FontSize="12" Foreground="#FF333333" Text="Осталось до начала" Visibility="{x:Bind HasStarted, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, ConverterParameter=1}"
+                            <TextBlock FontSize="12" Foreground="#FF333333" Text="Осталось до начала" Visibility="{x:Bind HasStarted, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, ConverterParameter=1}"
                                    RelativePanel.Below="Timer" RelativePanel.AlignHorizontalCenterWithPanel="True"/>
 
-                        <StackPanel Orientation="Horizontal"
+                            <StackPanel Orientation="Horizontal"
                                     RelativePanel.Above="Timer" RelativePanel.AlignHorizontalCenterWithPanel="True"
                                     Margin="0 0 0 20">
-                            <TextBlock Text="Best Of" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind BestOf}" Margin="3 0 0 0"/>
-                        </StackPanel>
-                    </RelativePanel>
+                                <TextBlock Text="Best Of" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind BestOf}" Margin="3 0 0 0"/>
+                            </StackPanel>
+
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="RelativeStates">
+                                    <VisualState x:Name="NarrowState">
+                                        <VisualState.StateTriggers>
+                                            <AdaptiveTrigger MinWindowWidth="0"/>
+                                        </VisualState.StateTriggers>
+                                        <VisualState.Setters>
+                                            <Setter Target="RadiantLogo.Width" Value="100"/>
+                                            <Setter Target="RadiantLogo.Height" Value="60"/>
+                                            <Setter Target="RadiantLogo.(RelativePanel.AlignVerticalCenterWithPanel)" Value="False"/>
+                                            <Setter Target="RadiantLogo.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                                            <Setter Target="RadiantLogo.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                                            <Setter Target="RadiantLogo.Margin" Value="15 15 0 0"/>
+                                            <Setter Target="RadiantTitle.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                                            <Setter Target="RadiantTitle.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
+                                            <Setter Target="RadiantTitle.Margin" Value="10 0 0 10"/>
+                                            
+                                            <Setter Target="DireLogo.Width" Value="100"/>
+                                            <Setter Target="DireLogo.Height" Value="60"/>
+                                            <Setter Target="DireLogo.(RelativePanel.AlignVerticalCenterWithPanel)" Value="False"/>
+                                            <Setter Target="DireLogo.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                                            <Setter Target="DireLogo.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                                            <Setter Target="DireLogo.Margin" Value="0 15 15 0"/>
+                                            <Setter Target="DireTitle.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                                            <Setter Target="DireTitle.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
+                                            <Setter Target="DireTitle.Margin" Value="0 10 10 0"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState x:Name="WideState">
+                                        <VisualState.StateTriggers>
+                                            <AdaptiveTrigger MinWindowWidth="900"/>
+                                        </VisualState.StateTriggers>
+                                        <VisualState.Setters>
+                                            <Setter Target="RadiantLogo.Width" Value="175"/>
+                                            <Setter Target="RadiantLogo.Height" Value="105"/>
+                                            <Setter Target="RadiantLogo.(RelativePanel.AlignVerticalCenterWithPanel)" Value="True"/>
+                                            <Setter Target="RadiantLogo.Margin" Value="25 0 0 0"/>
+                                            <Setter Target="RadiantTitle.(RelativePanel.RightOf)" Value="RadiantLogo"/>
+                                            <Setter Target="RadiantTitle.(RelativePanel.AlignVerticalCenterWithPanel)" Value="True"/>
+                                            <Setter Target="RadiantTitle.Margin" Value="0 10 0 0"/>
+
+                                            <Setter Target="DireLogo.Width" Value="175"/>
+                                            <Setter Target="DireLogo.Height" Value="105"/>
+                                            <Setter Target="DireLogo.(RelativePanel.AlignVerticalCenterWithPanel)" Value="True"/>
+                                            <Setter Target="DireLogo.Margin" Value="0 0 25 0"/>
+                                            <Setter Target="DireTitle.(RelativePanel.LeftOf)" Value="DireLogo"/>
+                                            <Setter Target="DireTitle.(RelativePanel.AlignVerticalCenterWithPanel)" Value="True"/>
+                                            <Setter Target="DireTitle.Margin" Value="0 10 0 0"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </RelativePanel>
+                    </UserControl>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

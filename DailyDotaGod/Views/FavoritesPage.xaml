@@ -13,7 +13,7 @@
                   Header="Любимые команды"
                   RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignTopWithPanel="True" Padding="10 0"
                   Margin="0 50 0 0" ItemsSource="{x:Bind FavoritesViewModel.Teams, Mode=OneWay}"
-                  ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                  ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" IsItemClickEnabled="True" ItemClick="TeamsGrid_ItemClick">
             <GridView.HeaderTemplate>
                 <DataTemplate>
                     <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding}" Margin="0 0 0 15"/>
@@ -39,7 +39,7 @@
 
                         <StackPanel RelativePanel.RightOf="TeamImage" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignRightWithPanel="True" Margin="15 0 0 0" >
                             <TextBlock Text="{x:Bind Name}" FontSize="18" FontWeight="Bold"
-                				TextWrapping="WrapWholeWords"/>
+                				TextWrapping="WrapWholeWords" Margin="0 0 10 0"/>
                             <TextBlock Text="{x:Bind Tag}" FontSize="14" FontWeight="Normal" Margin="0 5 0 0" 
                 				Foreground="#FF333333"/>
                         </StackPanel>

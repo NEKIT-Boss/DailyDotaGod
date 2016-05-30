@@ -47,11 +47,20 @@ namespace DailyDotaGod.Models.DailyDotaProxy
                {
                    using (var client = new HttpClient())
                    {
-                       string rawJson = await client.GetStringAsync(RequestAddress).ConfigureAwait(false);
-                       return await Task.Factory.StartNew(() =>
+                       try
                        {
-                           return JsonConvert.DeserializeObject<MatchesInfo>(rawJson);
-                       }).ConfigureAwait(false);
+                           string rawJson = await client.GetStringAsync(RequestAddress).ConfigureAwait(false);
+                           return await Task.Factory.StartNew(() =>
+                           {
+                               return JsonConvert.DeserializeObject<MatchesInfo>(rawJson);
+                           }).ConfigureAwait(false);
+                       }
+
+                       catch
+                       {
+                           var connected = IsConnnected;
+                           return null;
+                       }
                    }
                }
 

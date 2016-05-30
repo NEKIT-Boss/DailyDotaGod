@@ -63,7 +63,7 @@ namespace DailyDotaGod.ViewModels
 
         public async Task Filter()
         {
-            Shown = await Available.Where(x => x.Name.Contains(SearchText)).ToAsyncEnumerable().ToList();            
+            Shown = await Available.Where(x => x.Name.ToLower().Contains(SearchText.ToLower())).ToAsyncEnumerable().ToList();            
         }
     }
 }

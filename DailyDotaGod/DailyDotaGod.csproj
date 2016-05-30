@@ -126,6 +126,7 @@
     <Compile Include="ViewModels\DailyDotaLoader.cs" />
     <Compile Include="ViewModels\FavoriteTeamAddingViewModel.cs" />
     <Compile Include="ViewModels\FavoritesViewModel.cs" />
+    <Compile Include="ViewModels\FavoriteTeamViewModel.cs" />
     <Compile Include="ViewModels\Helpers.cs" />
     <Compile Include="ViewModels\MatchViewModel.cs" />
     <Compile Include="ViewModels\SchedulableMatchViewModel.cs" />
@@ -199,6 +200,11 @@
     <Page Include="Views\ScheduledMatchesPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Styles\FavoritesPageStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Views\Styles\MainPageStyle.xaml">
       <SubType>Designer</SubType>

@@ -57,7 +57,7 @@ namespace DailyDotaGod.ViewModels
         {
             get
             {
-                return This.StartTime.ToString("hh : mm");
+                return This.StartTime.ToString("HH : mm");
             }
         }
 

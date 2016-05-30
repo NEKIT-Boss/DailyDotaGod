@@ -44,5 +44,21 @@ namespace DailyDotaGod.Views
             await FavoritesViewModel.Load();
             AddTeamButton.Visibility = Visibility.Visible;
         }
+
+
+
+        private void TeamsGrid_ItemClick(object sender, ItemClickEventArgs e)
+        { 
+            var button = new Button();
+            button.FontFamily = new FontFamily("Segoe MDL2 Assets");
+            button.FontSize = 24;
+            button.Content = '\uE10A'.ToString();
+            button.Width = 300;
+            button.Height = 50;
+            Flyout flyout = new Flyout();
+            flyout.Content = button;
+            flyout.Placement = FlyoutPlacementMode.Bottom;
+            flyout.ShowAt(sender as FrameworkElement);
+        }
     }
 }

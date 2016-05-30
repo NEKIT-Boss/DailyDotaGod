@@ -2,6 +2,7 @@
 using Microsoft.Data.Entity;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +11,8 @@ namespace DailyDotaGod.ViewModels
 {
     class FavoritesViewModel : NotificationBase
     {
-        private List<TeamViewModel> _teams;
-        public List<TeamViewModel> Teams
+        private ObservableCollection<TeamViewModel> _teams;
+        public ObservableCollection<TeamViewModel> Teams
         {
             get
             {
@@ -26,7 +27,12 @@ namespace DailyDotaGod.ViewModels
 
         public FavoritesViewModel()
         {
-            Teams = new List<TeamViewModel>();
+            Teams = new ObservableCollection<TeamViewModel>();
+        }
+
+        public void Delete(TeamViewModel team)
+        {
+            Teams.Remove(team);
         }
 
         public async Task<bool> Load()
@@ -40,10 +46,10 @@ namespace DailyDotaGod.ViewModels
                         .ThenInclude( x => x.Logo )
                         .ToListAsync();
 
-                    Teams = await (from favorite in favorites
+                    Teams = new ObservableCollection<TeamViewModel>( await (from favorite in favorites
                             select new TeamViewModel(favorite.Team))
                             .ToAsyncEnumerable()
-                            .ToList();
+                            .ToList());
 
                     return true;
                 }
