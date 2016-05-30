@@ -11,8 +11,8 @@ namespace DailyDotaGod.ViewModels
 {
     class FavoritesViewModel : NotificationBase
     {
-        private ObservableCollection<TeamViewModel> _teams;
-        public ObservableCollection<TeamViewModel> Teams
+        private ObservableCollection<FavoriteTeamViewModel> _teams = new ObservableCollection<FavoriteTeamViewModel>();
+        public ObservableCollection<FavoriteTeamViewModel> Teams
         {
             get
             {
@@ -27,12 +27,6 @@ namespace DailyDotaGod.ViewModels
 
         public FavoritesViewModel()
         {
-            Teams = new ObservableCollection<TeamViewModel>();
-        }
-
-        public void Delete(TeamViewModel team)
-        {
-            Teams.Remove(team);
         }
 
         public async Task<bool> Load()
@@ -46,11 +40,11 @@ namespace DailyDotaGod.ViewModels
                         .ThenInclude( x => x.Logo )
                         .ToListAsync();
 
-                    Teams = new ObservableCollection<TeamViewModel>( await (from favorite in favorites
-                            select new TeamViewModel(favorite.Team))
-                            .ToAsyncEnumerable()
-                            .ToList());
-
+                    foreach (var favorite in favorites)
+                    {
+                        Teams.Add(new FavoriteTeamViewModel(favorite.Team));
+                    }
+                    
                     return true;
                 }
                 catch

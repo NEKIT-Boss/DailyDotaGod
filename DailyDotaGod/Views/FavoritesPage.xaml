@@ -4,10 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DailyDotaGod.Views"
     xmlns:ViewModels="using:DailyDotaGod.ViewModels" 
+    xmlns:Converters="using:DailyDotaGod.Views.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" Loading="Page_Loading" Height="Auto" Padding="0 0 0 10">
 
+    <Page.Resources>
+        <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Page.Resources>
+    
     <RelativePanel Background="{StaticResource AppBarBackgroundThemeBrush}" VerticalAlignment="Stretch">
         <GridView Name="TeamsGrid"
                   Header="Любимые команды"
@@ -21,8 +26,9 @@
             </GridView.HeaderTemplate>
             
             <GridView.ItemTemplate>
-                <DataTemplate x:DataType="ViewModels:TeamViewModel">
-                    <RelativePanel Width="300" Height="145" Margin="1" BorderBrush="#FFEBEBEB" BorderThickness="2">
+                <DataTemplate x:DataType="ViewModels:FavoriteTeamViewModel">
+                    <RelativePanel Width="300" Height="145" Margin="1" BorderBrush="#FFEBEBEB" BorderThickness="2"
+                                   >
                         <RelativePanel.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <LinearGradientBrush.RelativeTransform>
@@ -34,15 +40,19 @@
                             </LinearGradientBrush>
                         </RelativePanel.Background>
                         <Image x:Name="TeamImage" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="30 0 0 0" 
-                			Source="{x:Bind Logo}" Stretch="Fill" Width="130" Height="78"
+                			Source="{x:Bind Logo}" Stretch="Fill" Width="130" Height="78" Visibility="{x:Bind DeleteEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, ConverterParameter=1}"
                             />
 
-                        <StackPanel RelativePanel.RightOf="TeamImage" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignRightWithPanel="True" Margin="15 0 0 0" >
+                        <StackPanel RelativePanel.RightOf="TeamImage" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignRightWithPanel="True" Margin="15 0 0 0" 
+                                    Visibility="{x:Bind DeleteEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, ConverterParameter=1}">
                             <TextBlock Text="{x:Bind Name}" FontSize="18" FontWeight="Bold"
                 				TextWrapping="WrapWholeWords" Margin="0 0 10 0"/>
                             <TextBlock Text="{x:Bind Tag}" FontSize="14" FontWeight="Normal" Margin="0 5 0 0" 
                 				Foreground="#FF333333"/>
                         </StackPanel>
+                        <Button Background="Transparent" FontFamily="Segoe MDL2 Assets" Content="&#xE10A;" FontSize="30" Padding="25"
+                                    Visibility="{x:Bind DeleteEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                                    RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" Click="Button_Click_1"/>
                     </RelativePanel>
                 </DataTemplate>
             </GridView.ItemTemplate>

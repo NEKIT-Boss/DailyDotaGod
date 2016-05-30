@@ -39,26 +39,32 @@ namespace DailyDotaGod.Views
             mainMenuFrame.Navigate(typeof(AddFavoriteTeamPage), "Добавить команду");
         }
 
+        FavoriteTeamViewModel Last { get; set; }
+
         private async void Page_Loading(FrameworkElement sender, object args)
         {
             await FavoritesViewModel.Load();
             AddTeamButton.Visibility = Visibility.Visible;
         }
 
-
-
         private void TeamsGrid_ItemClick(object sender, ItemClickEventArgs e)
-        { 
-            var button = new Button();
-            button.FontFamily = new FontFamily("Segoe MDL2 Assets");
-            button.FontSize = 24;
-            button.Content = '\uE10A'.ToString();
-            button.Width = 300;
-            button.Height = 50;
-            Flyout flyout = new Flyout();
-            flyout.Content = button;
-            flyout.Placement = FlyoutPlacementMode.Bottom;
-            flyout.ShowAt(sender as FrameworkElement);
+        {
+            var team = e.ClickedItem as FavoriteTeamViewModel;
+            team.DeleteEnabled = !team.DeleteEnabled;
+            if (team.DeleteEnabled)
+            {
+                Last = team;
+            }
+            else
+            {
+                Last = null;
+            }
+        }
+
+        private async void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            await Last.DeleteAsync();
+            FavoritesViewModel.Teams.Remove(Last);
         }
     }
 }

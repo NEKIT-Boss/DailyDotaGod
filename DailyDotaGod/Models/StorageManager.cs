@@ -272,5 +272,23 @@ namespace DailyDotaGod.Models
             }
         }
 
+        public async Task<bool> RemoveFavoriteTeam(Data.Team team)
+        {
+            using (var context = new StorageContext())
+            {
+                try
+                {
+                    context.FavoriteTeams.Remove(await context.FavoriteTeams.FirstAsync(x => x.Team.Id == team.Id));
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
     }
 }
