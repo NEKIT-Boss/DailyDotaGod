@@ -27,6 +27,20 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
+        public bool _hasStarted;
+        public bool HasStarted
+        {
+            get
+            {
+                return _hasStarted;
+            }
+
+            set
+            {
+                SetProperty(ref _hasStarted, value);
+            }
+        }
+
         private TimeSpan _timeLeft;
         public TimeSpan TimeLeft
         {
@@ -38,7 +52,19 @@ namespace DailyDotaGod.ViewModels
             set
             {
                 SetProperty(ref _timeLeft, value);
-                TimeLeftReadable = $"{TimeLeft.Hours} : {TimeLeft.Minutes}";
+                if (value.TotalSeconds < 0)
+                {
+                    HasStarted = true;
+                }
+
+                if (HasStarted)
+                {
+                    TimeLeftReadable = "В Эфире";
+                }
+                else
+                {
+                    TimeLeftReadable = TimeLeft.ToString(@"hh\:mm");
+                }
             }
         }
 

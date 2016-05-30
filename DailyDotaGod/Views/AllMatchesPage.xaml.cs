@@ -23,22 +23,22 @@ namespace DailyDotaGod.Views
     /// </summary>
     public sealed partial class AllMatchesPage : Page
     {
-        AllMatchesViewModel VM { get; set; }
+        AllMatchesViewModel MatchesViewModel { get; set; }
 
         public AllMatchesPage()
         {
-            VM = new AllMatchesViewModel();
+            MatchesViewModel = new AllMatchesViewModel();
             this.InitializeComponent();
         }
 
         private async void Page_Loading(FrameworkElement sender, object args)
         {
-            await VM.Load();
+            await MatchesViewModel.Load();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            VM.Dispose();
+            MatchesViewModel.Dispose();
         }
     }
 }

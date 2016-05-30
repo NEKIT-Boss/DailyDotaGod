@@ -19,5 +19,11 @@ namespace DailyDotaGod.Data
         public virtual Team Team2 { get; set; }
         public int BestOf { get; set; }
         public virtual League League { get; set; }
+
+        public bool Expired()
+        {
+            double hoursElapsed = (DateTime.Now - StartTime).TotalHours;
+            return hoursElapsed > 5;
+        }
     }
 }

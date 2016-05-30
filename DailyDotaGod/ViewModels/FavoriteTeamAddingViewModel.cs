@@ -43,36 +43,27 @@ namespace DailyDotaGod.ViewModels
             }
         }
 
-        private TeamViewModel _selected;
-        public TeamViewModel Selected
+        public FavoriteTeamAddingViewModel()
         {
-            get
-            {
-                return _selected;
-            }
-
-            set
-            {
-                SetProperty(ref _selected, value);
-            }
+            
         }
 
-        public FavoriteTeamAddingViewModel()
+        public async Task Load()
         {
             using (var context = new StorageContext())
             {
                 context.TeamImages.Load();
                 var teams = context.Teams.ToList()
                     .Except(context.FavoriteTeams.Select(x => x.Team))
-                    .Select( x => new TeamViewModel(x));
+                    .Select(x => new TeamViewModel(x));
 
                 Available = teams.ToList();
             }
         }
 
-        public void Filter()
+        public async Task Filter()
         {
-            Shown = Available.Where(x => x.Name.Contains(SearchText)).ToList();            
+            Shown = await Available.Where(x => x.Name.Contains(SearchText)).ToAsyncEnumerable().ToList();            
         }
     }
 }

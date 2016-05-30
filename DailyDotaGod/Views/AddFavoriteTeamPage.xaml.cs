@@ -49,5 +49,10 @@ namespace DailyDotaGod.Views
                 }
             }
         }
+
+        private async void Page_Loading(FrameworkElement sender, object args)
+        {
+            await AddingViewModel.Load();
+        }
     }
 }

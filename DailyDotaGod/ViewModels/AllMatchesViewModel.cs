@@ -11,6 +11,7 @@ using DailyDotaGod.Models;
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Core;
+using System.Collections.ObjectModel;
 
 namespace DailyDotaGod.ViewModels
 {
@@ -18,24 +19,51 @@ namespace DailyDotaGod.ViewModels
     {
         CoreDispatcher dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-        private List<SchedulableMatchViewModel> _matches = new List<SchedulableMatchViewModel>();
-        public List<SchedulableMatchViewModel> Matches
+        private bool _isLoaded = false;
+        public bool IsLoaded
         {
             get
             {
-                return _matches;
+                return _isLoaded;
             }
 
             set
             {
-                SetProperty(ref _matches, value);
+                SetProperty(ref _isLoaded, value);
+            }
+        }
+
+        private ObservableCollection<SchedulableMatchViewModel> _upcomingLiveMatches = new ObservableCollection<SchedulableMatchViewModel>();
+        public ObservableCollection<SchedulableMatchViewModel> UpcomingLiveMatches
+        {
+            get
+            {
+                return _upcomingLiveMatches;
+            }
+
+            set
+            {
+                SetProperty(ref _upcomingLiveMatches, value);
+            }
+        }
+
+        private ObservableCollection<MatchViewModel> _recentMatches = new ObservableCollection<MatchViewModel>();
+        public ObservableCollection<MatchViewModel> RecentMatches
+        {
+            get
+            {
+                return _recentMatches;
+            }
+
+            set
+            {
+                SetProperty(ref _recentMatches, value);
             }
         }
 
         public AllMatchesViewModel()
         {
             StorageManager.Instance.PropertyChanged += StorageReloaded;
-            
         }
 
         private async void StorageReloaded(object sender, PropertyChangedEventArgs e)
@@ -45,17 +73,30 @@ namespace DailyDotaGod.ViewModels
 
         public async Task Load()
         {
+            IsLoaded = false;
+
+            RecentMatches.Clear();
+            UpcomingLiveMatches.Clear();
+
             using (var context = new StorageContext())
             {
                 await context.Teams.Include(x => x.Logo).LoadAsync();
                 var matches = await context.Matches
                     .ToListAsync();
 
-                Matches = await (from match in matches
-                                 select new SchedulableMatchViewModel(match))
-                                .ToAsyncEnumerable()
-                                .ToList();
+                foreach (var match in matches)
+                {
+                    if (match.Expired())
+                    {
+                        RecentMatches.Add(new MatchViewModel(match));
+                    }
+                    else
+                    {
+                        UpcomingLiveMatches.Add(new SchedulableMatchViewModel(match));
+                    }
+                }
             }
+            IsLoaded = true;
         }
 
         public void Dispose()
