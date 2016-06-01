@@ -63,7 +63,15 @@ namespace DailyDotaGod.ViewModels
                 }
                 else
                 {
-                    TimeLeftReadable = TimeLeft.ToString(@"hh\:mm");
+                    if (TimeLeft.TotalDays < 1)
+                    {
+                        TimeLeftReadable = TimeLeft.ToString(@"hh\:mm");
+                    }
+                    else
+                    {
+                        TimeLeftReadable = "Завтра";
+                    }
+
                 }
             }
         }

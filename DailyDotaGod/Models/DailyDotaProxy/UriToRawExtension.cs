@@ -26,17 +26,27 @@ namespace DailyDotaGod.Models.DailyDotaProxy
                     catch (Exception ex)
                     {
                         Debug.WriteLine(ex.Message + " " +  image_uri.AbsoluteUri);
-                        return null;
+                        throw;
                     }
 
-                    using (IInputStream inputStream = await response.Content.ReadAsInputStreamAsync())
+                    try
                     {
-                        using (MemoryStream memoryStream = new MemoryStream())
+                        using (IInputStream inputStream = await response.Content.ReadAsInputStreamAsync())
                         {
-                            inputStream.AsStreamForRead().CopyTo(memoryStream);
-                            return memoryStream.ToArray();
+                            using (MemoryStream memoryStream = new MemoryStream())
+                            {
+                                inputStream.AsStreamForRead().CopyTo(memoryStream);
+                                return memoryStream.ToArray();
+                            }
                         }
                     }
+
+                    catch
+                    {
+                        Debug.WriteLine("Something went wrong with data");
+                        throw;
+                    }
+
                 }
             }
         }

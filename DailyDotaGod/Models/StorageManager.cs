@@ -106,16 +106,30 @@ namespace DailyDotaGod.Models
         {
             return await Task.Run(async () =>
             {
-                byte[] rawData = await logoUri.DownloadRawAsync();
-                if (rawData == null)
+                byte[] rawData = null;
+                TeamImage image = null;
+
+                try
                 {
-                    return null;
+                    rawData = await logoUri.DownloadRawAsync();
                 }
 
-                return new TeamImage
+                catch (NullReferenceException)
                 {
-                    Data = rawData,
-                };
+                    Debug.WriteLine($"Logo is null, but everything is fine!");
+                }
+
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"{ex.Message} something went wrong while loading");
+                }
+
+                finally
+                {
+                    image = (rawData != null) ? new TeamImage { Data = rawData } : null;
+                }
+
+                return image;
             }).ConfigureAwait(false);
         }
 
@@ -123,18 +137,30 @@ namespace DailyDotaGod.Models
         {
             return await Task.Run(async () =>
             {
-                if (logoUri == null)
+                byte[] rawData = null;
+                CountryImage image = null;
+
+                try
                 {
-                    return null;
+                    rawData = await logoUri.DownloadRawAsync();
                 }
 
-                byte[] rawData = await logoUri.DownloadRawAsync();
-
-                return new CountryImage
+                catch (NullReferenceException)
                 {
-                    Data = rawData,
-                    Code = countryCode
-                };
+                    Debug.WriteLine($"Logo is null, but everything is fine!");
+                }
+
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"{ex.Message} something went wrong while loading");
+                }
+
+                finally
+                {
+                    image = (rawData != null) ? new CountryImage { Code = countryCode, Data = rawData } : null;
+                }
+
+                return image;
             }).ConfigureAwait(false);
         }
 
