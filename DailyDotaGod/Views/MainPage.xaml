@@ -60,7 +60,7 @@
             </Grid>
         </RelativePanel>
 
-        <SplitView Grid.Row="1" x:Name="MenuSplitView" DisplayMode="CompactOverlay"
+        <SplitView Grid.Row="1" x:Name="MenuSplitView"  
 			OpenPaneLength="{StaticResource OpenedPaneWidth}" CompactPaneLength="{StaticResource ClosedPaneWidth}"
 			HorizontalAlignment="Stretch" PaneBackground="#FF2B2B2B">
             <SplitView.Pane>
@@ -71,7 +71,7 @@
                             <Setter Property="VerticalAlignment" Value="Bottom"/>
                         </Style>
                     </ListBox.ItemContainerStyle>
-                    
+
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Grid >
@@ -181,5 +181,28 @@
                 </ScrollViewer>
             </SplitView.Content>
         </SplitView>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="AdaptiveGroup">
+                <VisualState x:Name="Wide">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="400"/>
+                    </VisualState.StateTriggers>
+
+                    <VisualState.Setters>
+                        <Setter Target="MenuSplitView.DisplayMode" Value="CompactOverlay"/>
+                    </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Narrow">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+
+                    <VisualState.Setters>
+                        <Setter Target="MenuSplitView.DisplayMode" Value="Overlay"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </Page>

@@ -35,56 +35,93 @@
 
         <GridView Name="Upcoming" ItemsSource="{x:Bind MatchesViewModel.UpcomingLiveMatches, Mode=OneWay}"
                   Visibility="{x:Bind MatchesViewModel.IsLoaded, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
-                  RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignTopWithPanel="True"
-                  Margin="15 35 15 0" Header="В Эфире и предстоящие">
+                  RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignTopWithPanel="True"
+                  HorizontalContentAlignment="Stretch"
+                  Margin="15 35 15 0" Header="">
             <GridView.HeaderTemplate>
                 <DataTemplate>
                     <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding}" Margin="0 0 0 15"/>
                 </DataTemplate>
             </GridView.HeaderTemplate>
-            
+
+            <GridView.ItemContainerStyle>
+                <Style TargetType="GridViewItem">
+                    <Setter Property="Background" Value="Orange"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </GridView.ItemContainerStyle>
+
             <GridView.ItemTemplate >
                 <DataTemplate x:DataType="ViewModels:SchedulableMatchViewModel">
-                    <RelativePanel Width="300" Height="145" Background="White" BorderBrush="#FFEBEBEB" BorderThickness="2">
-                        <StackPanel Name="BestOf" Orientation="Horizontal"
+                    <UserControl>
+                        <RelativePanel x:Name="Holder" Background="White" BorderBrush="#FFEBEBEB" BorderThickness="2" HorizontalAlignment="Left">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="AdaptiveGroup">
+                                    <VisualState x:Name="Wide">
+                                        <VisualState.StateTriggers>
+                                            <AdaptiveTrigger MinWindowWidth="400"/>
+                                        </VisualState.StateTriggers>
+
+                                        <VisualState.Setters>
+                                            <Setter Target="Holder.Width" Value="300"/>
+                                            <Setter Target="Holder.Height" Value="145"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState x:Name="Narrow">
+                                        <VisualState.StateTriggers>
+                                            <AdaptiveTrigger MinWindowWidth="0"/>
+                                        </VisualState.StateTriggers>
+
+                                        <VisualState.Setters>
+                                            <Setter Target="Holder.Width" Value="330"/>
+                                            <Setter Target="Holder.Height" Value="165"/>
+                                            <Setter Target="Holder.HorizontalAlignment" Value="Center"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <StackPanel Name="BestOf" Orientation="Horizontal"
                                     RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True">
-                            <TextBlock  Text="Best Of" FontSize="12" FontWeight="Bold" />
-                            <TextBlock  Text="{x:Bind BestOf}" FontSize="12" FontWeight="Bold" Margin="3 0 0 0"/>
-                        </StackPanel>
-                        <TextBlock Text="VS" FontSize="14"
+                                <TextBlock  Text="Best Of" FontSize="12" FontWeight="Bold" />
+                                <TextBlock  Text="{x:Bind BestOf}" FontSize="12" FontWeight="Bold" Margin="3 0 0 0"/>
+                            </StackPanel>
+                            <TextBlock Text="VS" FontSize="14"
                                    RelativePanel.Below="BestOf" RelativePanel.AlignHorizontalCenterWith="BestOf"
                                    TextAlignment="Center"
                                    Margin="0 5 0 0"/>
-                        <Image Name="RadiantLogo" Source="{x:Bind RadiantTeam.Logo}" Width="100" Height="60"
+                            <Image Name="RadiantLogo" Source="{x:Bind RadiantTeam.Logo}" Width="100" Height="60"
                                RelativePanel.LeftOf="BestOf" RelativePanel.AlignVerticalCenterWithPanel="True"
                                Margin="0 0 5 0"/>
 
-                        <TextBlock Text="{x:Bind RadiantTeam.Tag}" FontSize="14"
+                            <TextBlock Text="{x:Bind RadiantTeam.Tag}" FontSize="14"
                                    RelativePanel.Below="RadiantLogo" RelativePanel.AlignHorizontalCenterWith="RadiantLogo"
                                    Margin="0 5 0 0" TextAlignment="Center"/>
 
-                        <Image Name="DireLogo"  Source="{x:Bind DireTeam.Logo}" Width="100" Height="60"
+                            <Image Name="DireLogo"  Source="{x:Bind DireTeam.Logo}" Width="100" Height="60"
                                RelativePanel.RightOf="BestOf" RelativePanel.AlignVerticalCenterWithPanel="True"
                                Margin="5 0 0 0"/>
 
-                        <TextBlock Text="{x:Bind DireTeam.Tag}" FontSize="14"
+                            <TextBlock Text="{x:Bind DireTeam.Tag}" FontSize="14"
                                    RelativePanel.Below="DireLogo" RelativePanel.AlignHorizontalCenterWith="DireLogo"
                                    Margin="0 5 0 0" TextAlignment="Center"/>
-                        
-                        <ToggleButton RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignRightWithPanel="True"
+
+                            <ToggleButton RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignRightWithPanel="True"
                                 Margin="0 5 5 0" FontFamily="Segoe MDL2 Assets" Content="&#xE1CB;"
                                 IsChecked="{x:Bind IsScheduled, Mode=OneWay}" Click="{x:Bind ScheduleEvent}"/>
 
-                        <StackPanel RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True"
+                            <StackPanel RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True"
                                     Margin="5 5 0 0">
-                            <TextBlock FontSize="12" Text="{x:Bind StartTime}" Foreground="#FF333333" FontStyle="Italic"/>
-                        </StackPanel>
-                    </RelativePanel>
+                                <TextBlock FontSize="12" Text="{x:Bind StartTime}" Foreground="#FF333333" FontStyle="Italic"/>
+                            </StackPanel>
+                        </RelativePanel>
+                    </UserControl>
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
 
-        <GridView ItemsSource="{x:Bind MatchesViewModel.RecentMatches, Mode=OneWay}" RelativePanel.AlignLeftWith="Upcoming" RelativePanel.Below="Upcoming"
+        <GridView x:Name="Recent" ItemsSource="{x:Bind MatchesViewModel.RecentMatches, Mode=OneWay}" RelativePanel.AlignLeftWith="Upcoming" RelativePanel.Below="Upcoming"
                   Margin="15 20 15 0" Header="Недавние" Visibility="{x:Bind MatchesViewModel.IsLoaded, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
             <GridView.HeaderTemplate>
                 <DataTemplate>

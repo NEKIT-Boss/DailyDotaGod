@@ -188,6 +188,8 @@ namespace DailyDotaGod.Models
                     await Task.WhenAll(countryImagesTasks);
                     await Task.WhenAll(teamImagesTasks);
 
+                    Debug.WriteLine("images awaited");
+
                     TeamImage[] teamImages = teamImagesTasks
                         .Select(teamImageTask => teamImageTask.Result)
                         .ToArray();
@@ -196,6 +198,7 @@ namespace DailyDotaGod.Models
                         teamImages.Where( teamImage => teamImage != null)
                     );
                     await context.SaveChangesAsync();
+                    Debug.WriteLine("ImagesSaved!");
 
                     CountryImage[] countryImages = countryImagesTasks
                         .Select(countryImagesTask => countryImagesTask.Result)
@@ -205,10 +208,13 @@ namespace DailyDotaGod.Models
                         countryImages.Where ( countryImage => countryImage != null )
                     );
                     await context.SaveChangesAsync();
+                    Debug.WriteLine("ImagesSaved!2");
+
 
                     List<Data.Team> teams = new List<Data.Team>();
                     for (int teamIndex = 0; teamIndex < newTeams.Count(); teamIndex++)
                     {
+                        Debug.WriteLine(teamIndex);
                         teams.Add(new Data.Team()
                         {
                             Name = newTeams.ElementAt(teamIndex).Name,
@@ -221,6 +227,7 @@ namespace DailyDotaGod.Models
                         });
                     }
                     context.Teams.AddRange(teams);
+                    Debug.WriteLine("Teams Started");
                     await context.SaveChangesAsync();
                     Notify();
 

@@ -105,6 +105,7 @@ namespace DailyDotaGod.ViewModels
                bool loadedAny = false;
 
                bool isConnected = await CheckConnectionAsync();
+               Debug.WriteLine("checked");
                if (!isConnected)
                {
                    return loadedAny;
@@ -123,7 +124,9 @@ namespace DailyDotaGod.ViewModels
                {
                    if (newTeams.Any())
                    {
+                       Debug.WriteLine("StoringTeams");
                        await Storage.StoreTeams(newTeams);
+                       Debug.WriteLine("TeamsStored");
                        loadedAny = true;
                    }
                }
@@ -140,6 +143,7 @@ namespace DailyDotaGod.ViewModels
                {
                    if (newMatches.Any())
                    {
+                       Debug.WriteLine("Started Matches");
                        await Storage.StoreMatches(newMatches);
                        loadedAny = true;
                    }
@@ -156,6 +160,7 @@ namespace DailyDotaGod.ViewModels
 
         private async void LoadMatchesAsyncEvent(object sender, object e)
         {
+            (sender as DispatcherTimer).Stop();
             ConnectionChecking = true;
             IsConnected = await CheckConnectionAsync();
 
@@ -169,6 +174,7 @@ namespace DailyDotaGod.ViewModels
             }
 
             ConnectionChecking = false;
+            (sender as DispatcherTimer).Start();
         }
 
         private void ReconfigureTimer()
@@ -193,8 +199,8 @@ namespace DailyDotaGod.ViewModels
             IsConnected = await CheckConnectionAsync();
             await LoadMatchesAsync();
 
-            ReloadTimer.Start();
-            ConnectionChecking = false;
+            //ReloadTimer.Start();
+            //ConnectionChecking = false;
         }
 
         public DailyDotaLoader(TimeSpan requestInterval)
